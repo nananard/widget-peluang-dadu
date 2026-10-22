@@ -103,7 +103,7 @@ button:disabled {
 
 .dice-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
   gap: 12px;
   margin-top: 18px;
 }
@@ -117,15 +117,10 @@ button:disabled {
   min-width: 0;
 }
 
+/* Kartu dadu tidak diberi highlight hijau */
 .dice-card.observed {
-  border-color: #269568;
-  background: #effaf4;
-}
-
-.card-title {
-  font-weight: bold;
-  color: #244a87;
-  font-size: 14px;
+  border-color: #dce4f0;
+  background: white;
 }
 
 .dice-pair {
@@ -194,7 +189,6 @@ button:disabled {
   justify-self: center;
 }
 
-/* Susunan titik untuk setiap mata dadu */
 .face[data-number="1"] .pip:nth-child(1) { grid-area: 2 / 2; }
 
 .face[data-number="2"] .pip:nth-child(1) { grid-area: 1 / 1; }
@@ -229,11 +223,6 @@ button:disabled {
   margin: 5px 0;
 }
 
-.dice-card.observed .card-status {
-  color: #26734d;
-  font-weight: bold;
-}
-
 .dice-card button {
   width: 94%;
   font-size: 12px;
@@ -256,6 +245,13 @@ th, td {
 
 th { background: #edf3fc; color: #244a87; }
 
+/* Highlight hijau hanya untuk baris tabel yang termasuk kejadian */
+tr.event-row td {
+  background: #bbf7d0;
+  color: #166534;
+  border-color: #86d9a6;
+}
+
 .answer-area {
   display: none;
   margin-top: 20px;
@@ -266,11 +262,27 @@ th { background: #edf3fc; color: #244a87; }
 
 .feedback { font-weight: bold; }
 
+.mission-navigation {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid #d7dfeb;
+}
+
+.mission-navigation button {
+  flex: 1;
+  max-width: 240px;
+  padding: 12px;
+}
+
 @media (max-width: 500px) {
   main { padding: 10px; }
   .panel { padding: 13px; }
   .dice-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .stats { grid-template-columns: 1fr; }
+  .mission-navigation button { font-size: 13px; }
 }
 </style>
 </head>
@@ -306,8 +318,7 @@ th { background: #edf3fc; color: #244a87; }
     <h2>2. Kocok Dadu pada Setiap Kartu</h2>
     <p class="note">
       Sebelum dikocok, semua dadu menampilkan angka 1.
-      Setelah dikocok, setiap dadu berhenti pada hasil sesuai kartu
-      dan mempertahankan hasil tersebut.
+      Setelah dikocok, hasil dadu tetap ditampilkan pada kartunya.
     </p>
 
     <div class="stats">
@@ -327,6 +338,10 @@ th { background: #edf3fc; color: #244a87; }
   <section class="panel">
     <h2>3. Tabel Pengamatan</h2>
 
+    <p class="note">
+      Baris berwarna hijau menunjukkan hasil yang termasuk kejadian pada misi.
+    </p>
+
     <div class="table-wrap">
       <table>
         <thead>
@@ -342,22 +357,35 @@ th { background: #edf3fc; color: #244a87; }
     </div>
 
     <div class="answer-area" id="answerArea">
-      <h2>4. Temukan Peluang Teoretis</h2>
+      <h2>4. Tentukan Peluang Teoretis</h2>
       <p>
-        Semua anggota ruang sampel telah diamati. Tentukan sendiri banyak
-        anggota kejadian dan peluang teoretis dari misi ini.
+        Semua kemungkinan hasil telah diamati. Gunakan ruang sampel dan
+        hasil yang termasuk kejadian untuk mengisi jawaban berikut.
       </p>
 
       <label for="nA">Banyak anggota kejadian, n(A)</label>
-      <input id="nA" type="number" min="0" placeholder="Tuliskan jawabanmu">
+      <input id="nA" type="number" min="0" step="1"
+             placeholder="Tuliskan jawabanmu">
 
       <label for="pA">Peluang teoretis, P(A)</label>
-      <input id="pA" type="text" placeholder="Contoh: 1/6 atau 0,167">
+      <input id="pA" type="text"
+             placeholder="Contoh: 1/6 atau 0,167">
 
       <button class="primary" id="checkButton" style="margin-top:12px">
         Periksa Jawaban
       </button>
+
       <p id="feedback" class="feedback" aria-live="polite"></p>
+
+      <!-- Navigasi misi berada paling bawah setelah bagian jawaban peluang -->
+      <div class="mission-navigation">
+        <button class="secondary" id="previousMission">
+          ← Misi Sebelumnya
+        </button>
+        <button class="primary" id="nextMission">
+          Misi Selanjutnya →
+        </button>
+      </div>
     </div>
   </section>
 </main>
@@ -411,15 +439,6 @@ const missions = {
   }
 };
 
-const faceTransforms = {
-  1: "rotateX(0deg) rotateY(0deg)",
-  2: "rotateX(90deg) rotateY(0deg)",
-  3: "rotateX(0deg) rotateY(90deg)",
-  4: "rotateX(0deg) rotateY(-90deg)",
-  5: "rotateX(-90deg) rotateY(0deg)",
-  6: "rotateX(0deg) rotateY(180deg)"
-};
-
 const faceDefinitions = [
   ["front", 1],
   ["back", 6],
@@ -437,12 +456,6 @@ let missionId = 1;
 let outcomes = [];
 let observed = new Set();
 let rollingKeys = new Set();
-
-/*
- * Menyimpan angka yang sudah tampil pada setiap kartu.
- * Nilai awal kedua dadu adalah 1.
- * Setelah dikocok, nilai disimpan dan tidak direset saat kartu dirender ulang.
- */
 let displayedResults = new Map();
 
 function keyOf(outcome) {
@@ -466,11 +479,10 @@ function makeOutcomes() {
     }
   }
 
-  // Setiap kartu memulai dengan semua mata dadu bernilai 1.
   displayedResults.clear();
+
   outcomes.forEach(outcome => {
-    displayedResults.set(keyOf(outcome),
-      outcome.map(() => 1));
+    displayedResults.set(keyOf(outcome), outcome.map(() => 1));
   });
 }
 
@@ -488,11 +500,6 @@ function makeFace(faceName, number) {
   return face;
 }
 
-/*
- * Sisi depan dadu menampilkan nilai yang tersimpan.
- * Nilai awal adalah 1, sedangkan hasil setelah dikocok disimpan
- * di displayedResults agar tidak kembali ke 1 saat render ulang.
- */
 function makeDie(number, uniqueId) {
   const stage = document.createElement("div");
   stage.className = "die-stage";
@@ -506,10 +513,9 @@ function makeDie(number, uniqueId) {
     cube.appendChild(makeFace(faceName, visibleNumber));
   });
 
-  // Posisi awal selalu memperlihatkan sisi depan, yaitu mata dadu 1.
   cube.style.transform = "rotateX(0deg) rotateY(0deg)";
-
   stage.appendChild(cube);
+
   return stage;
 }
 
@@ -522,10 +528,7 @@ function createCard(outcome) {
   const card = document.createElement("div");
   card.className = "dice-card" + (isObserved ? " observed" : "");
 
-  const title = document.createElement("div");
-  title.className = "card-title";
-  title.textContent = `Kemungkinan ${labelOf(outcome)}`;
-
+  // Tidak ada tulisan "Kemungkinan" di atas dadu.
   const pair = document.createElement("div");
   pair.className = "dice-pair";
 
@@ -540,8 +543,8 @@ function createCard(outcome) {
   status.textContent = isRolling
     ? "Dadu sedang berputar..."
     : isObserved
-      ? `✓ Hasil ${labelOf(outcome)} telah diamati`
-      : "Belum diamati";
+      ? `Hasil: ${savedFaces.join(" dan ")}`
+      : "Belum dikocok";
 
   const button = document.createElement("button");
   button.className = isObserved ? "secondary" : "primary";
@@ -549,36 +552,36 @@ function createCard(outcome) {
   button.disabled = rollingKeys.size > 0;
   button.addEventListener("click", () => rollCard(outcome));
 
-  card.append(title, pair, status, button);
+  card.append(pair, status, button);
   return card;
 }
 
 function renderGrid() {
   diceGrid.innerHTML = "";
-  outcomes.forEach(outcome => {
-    diceGrid.appendChild(createCard(outcome));
-  });
+  outcomes.forEach(outcome => diceGrid.appendChild(createCard(outcome)));
 }
 
 function renderTable() {
   observationBody.innerHTML = "";
 
   outcomes.forEach(outcome => {
-    if (!observed.has(keyOf(outcome))) return;
+    const key = keyOf(outcome);
+    if (!observed.has(key)) return;
 
+    const isEvent = missions[missionId].event(outcome);
     const row = document.createElement("tr");
+
+    // Highlight hijau hanya diterapkan pada baris kejadian di tabel.
+    if (isEvent) row.classList.add("event-row");
 
     const numberCell = document.createElement("td");
     numberCell.textContent = observationBody.children.length + 1;
 
     const resultCell = document.createElement("td");
-    // Hasil pengamatan sama dengan hasil kartu yang diamati.
     resultCell.textContent = labelOf(outcome);
 
     const eventCell = document.createElement("td");
-    eventCell.textContent = missions[missionId].event(outcome)
-      ? "Termasuk kejadian"
-      : "Bukan kejadian";
+    eventCell.textContent = isEvent ? "Termasuk kejadian" : "Bukan kejadian";
 
     const statusCell = document.createElement("td");
     statusCell.textContent = "Sudah diamati";
@@ -594,6 +597,12 @@ function renderTable() {
 
   document.getElementById("answerArea").style.display =
     observed.size === outcomes.length ? "block" : "none";
+
+  document.getElementById("previousMission").disabled =
+    missionId === 1 || observed.size !== outcomes.length;
+
+  document.getElementById("nextMission").disabled =
+    missionId === 9 || observed.size !== outcomes.length;
 }
 
 function renderAll() {
@@ -614,7 +623,6 @@ function rollCard(outcome) {
     : null;
 
   const cubes = [cubeA, cubeB].filter(Boolean);
-
   cubes.forEach(cube => cube.classList.add("rolling"));
 
   const spinTimer = setInterval(() => {
@@ -629,18 +637,8 @@ function rollCard(outcome) {
   setTimeout(() => {
     clearInterval(spinTimer);
 
-    /*
-     * Simpan angka hasil kartu sebelum menggambar ulang kartu.
-     * Setelah berhenti, angka depan dadu adalah angka hasil kartu.
-     */
-    const finalFaces = [...outcome];
-    displayedResults.set(key, finalFaces);
-
-    cubes.forEach(cube => {
-      cube.classList.remove("rolling");
-      cube.style.transform = "rotateX(0deg) rotateY(0deg)";
-    });
-
+    // Simpan hasil kartu agar tidak kembali ke angka 1.
+    displayedResults.set(key, [...outcome]);
     observed.add(key);
     rollingKeys.delete(key);
 
@@ -656,7 +654,7 @@ function rollNext() {
   if (next) {
     rollCard(next);
   } else {
-    alert("Semua kemungkinan hasil sudah diamati. Kamu dapat mengocok kembali kartu yang diinginkan.");
+    alert("Semua kemungkinan hasil sudah diamati.");
   }
 }
 
@@ -664,13 +662,10 @@ function resetMission() {
   if (rollingKeys.size > 0) return;
 
   observed.clear();
-
   document.getElementById("nA").value = "";
   document.getElementById("pA").value = "";
   document.getElementById("feedback").textContent = "";
-  document.getElementById("answerArea").style.display = "none";
 
-  // Ulangi misi mengembalikan semua dadu ke angka 1.
   displayedResults.clear();
   outcomes.forEach(outcome => {
     displayedResults.set(keyOf(outcome), outcome.map(() => 1));
@@ -689,16 +684,26 @@ function setupMission() {
 
   document.getElementById("diceDescription").textContent =
     missions[missionId].dice === 1
-      ? "Terdapat 6 kartu dadu. Sebelum dikocok, semua mata dadu bernilai 1."
-      : "Terdapat 36 kartu pasangan dadu. Sebelum dikocok, semua mata dadu bernilai 1.";
+      ? "Terdapat 6 kemungkinan hasil dadu."
+      : "Terdapat 36 kemungkinan pasangan hasil dua dadu.";
 
   document.getElementById("nA").value = "";
   document.getElementById("pA").value = "";
   document.getElementById("feedback").textContent = "";
-  document.getElementById("answerArea").style.display = "none";
 
   makeOutcomes();
   renderAll();
+}
+
+function navigateMission(nextId) {
+  if (rollingKeys.size > 0) return;
+  if (nextId < 1 || nextId > 9) return;
+  if (observed.size !== outcomes.length) return;
+
+  missionSelect.value = String(nextId);
+  setupMission();
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 document.getElementById("rollNext").addEventListener("click", rollNext);
@@ -706,6 +711,14 @@ document.getElementById("resetButton").addEventListener("click", resetMission);
 
 missionSelect.addEventListener("change", () => {
   if (rollingKeys.size === 0) setupMission();
+});
+
+document.getElementById("previousMission").addEventListener("click", () => {
+  navigateMission(missionId - 1);
+});
+
+document.getElementById("nextMission").addEventListener("click", () => {
+  navigateMission(missionId + 1);
 });
 
 document.getElementById("checkButton").addEventListener("click", () => {
@@ -749,7 +762,6 @@ document.getElementById("checkButton").addEventListener("click", () => {
   ).length;
 
   const correctP = correctN / outcomes.length;
-
   const countOK = Number.isInteger(nAnswer) && nAnswer === correctN;
   const probabilityOK =
     Number.isFinite(pAnswer) &&
@@ -760,7 +772,7 @@ document.getElementById("checkButton").addEventListener("click", () => {
     feedback.style.color = "#26734d";
   } else {
     feedback.textContent =
-      "Belum tepat. Periksa kembali anggota kejadian dan ruang sampelnya.";
+      "Belum tepat. Periksa kembali banyak anggota kejadian dan ruang sampelnya.";
     feedback.style.color = "#b91c1c";
   }
 });
