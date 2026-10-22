@@ -46,6 +46,11 @@ header {
   line-height: 1.6;
 }
 
+#missionTitle {
+  font-size: 24px;
+  line-height: 1.4;
+}
+
 .dice-area { text-align: center; padding: 10px; }
 
 .dice-row {
@@ -166,6 +171,7 @@ input {
   .stats { grid-template-columns: 1fr; }
   .die { font-size: 78px; }
   .card { padding: 16px; }
+  #missionTitle { font-size: 21px; }
 }
 </style>
 </head>
@@ -183,7 +189,7 @@ input {
   <h2 id="missionTitle"></h2>
   <p id="missionText"></p>
   <p class="note">
-    Kocok dadu sebanyak jumlah percobaan yang diminta.
+    Klik tombol “Kocok Dadu” sampai jumlah percobaan terpenuhi.
     Hasil setiap pelemparan akan otomatis masuk ke tabel.
   </p>
 </section>
@@ -289,12 +295,10 @@ input {
 <script>
 const faces = ["⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
 
-// LEVEL 1: PELEMPARAN SATU DADU
-// LEVEL 2: PELEMPARAN DUA DADU
 const missions = [
   {
     level: 1,
-    title: "Perintah 1: Satu Dadu",
+    title: "Berapa peluang munculnya mata dadu 3 dalam 10 kali pelemparan?",
     rolls: 10,
     dice: 1,
     condition: "mata dadu 3",
@@ -303,7 +307,7 @@ const missions = [
   },
   {
     level: 1,
-    title: "Perintah 2: Satu Dadu",
+    title: "Berapa peluang munculnya mata dadu genap dalam 15 kali pelemparan?",
     rolls: 15,
     dice: 1,
     condition: "mata dadu genap (2, 4, atau 6)",
@@ -312,7 +316,7 @@ const missions = [
   },
   {
     level: 1,
-    title: "Perintah 3: Satu Dadu",
+    title: "Berapa peluang munculnya mata dadu lebih dari 4 dalam 20 kali pelemparan?",
     rolls: 20,
     dice: 1,
     condition: "mata dadu lebih dari 4 (5 atau 6)",
@@ -321,7 +325,7 @@ const missions = [
   },
   {
     level: 2,
-    title: "Perintah 4: Dua Dadu",
+    title: "Berapa peluang jumlah mata kedua dadu sama dengan 7 dalam 10 kali pelemparan dua dadu?",
     rolls: 10,
     dice: 2,
     condition: "jumlah kedua mata dadu sama dengan 7",
@@ -330,7 +334,7 @@ const missions = [
   },
   {
     level: 2,
-    title: "Perintah 5: Dua Dadu",
+    title: "Berapa peluang kedua dadu menunjukkan mata yang sama dalam 15 kali pelemparan dua dadu?",
     rolls: 15,
     dice: 2,
     condition: "kedua dadu menunjukkan mata yang sama",
@@ -339,7 +343,7 @@ const missions = [
   },
   {
     level: 2,
-    title: "Perintah 6: Dua Dadu",
+    title: "Berapa peluang jumlah mata kedua dadu lebih dari 9 dalam 20 kali pelemparan dua dadu?",
     rolls: 20,
     dice: 2,
     condition: "jumlah kedua mata dadu lebih dari 9",
@@ -369,11 +373,12 @@ function renderMission() {
   const m = mission();
 
   $("progress").textContent =
-    `Level ${m.level} — Perintah ${index + 1} dari ${missions.length}`;
+    `Level ${m.level} — ${m.level === 1 ? "Satu Dadu" : "Dua Dadu"} | Perintah ${index + 1} dari ${missions.length}`;
 
-  $("missionTitle").textContent = m.title;
+  // Pertanyaan ditampilkan sebagai judul perintah.
+  $("missionTitle").textContent = m.question;
   $("missionText").textContent =
-    `Lakukan ${m.rolls} kali pelemparan. Amati ${m.condition}.`;
+    `Lakukan ${m.rolls} kali pelemparan dan catat hasilnya pada tabel.`;
 
   $("questionText").textContent = m.question;
   $("die2").hidden = m.dice === 1;
