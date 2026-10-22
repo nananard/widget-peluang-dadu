@@ -7,9 +7,7 @@
 <title>Eksperimen Peluang Dadu</title>
 
 <style>
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -19,7 +17,7 @@ body {
 }
 
 .container {
-  max-width: 900px;
+  max-width: 950px;
   margin: 25px auto;
   padding: 20px;
 }
@@ -32,10 +30,6 @@ header {
   text-align: center;
 }
 
-header h1 {
-  margin: 0 0 10px;
-}
-
 .card {
   background: white;
   padding: 22px;
@@ -44,31 +38,30 @@ header h1 {
   box-shadow: 0 3px 12px #0000000d;
 }
 
-.mission {
-  border-left: 5px solid #2563eb;
-}
+.mission { border-left: 5px solid #2563eb; }
 
-.progress {
+.progress, .note {
   color: #64748b;
   font-size: 14px;
-  margin-bottom: 12px;
+  line-height: 1.6;
 }
 
-.dice-area {
-  text-align: center;
-  padding: 10px;
+.dice-area { text-align: center; padding: 10px; }
+
+.dice-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 22px;
+  flex-wrap: wrap;
 }
 
-.dice {
-  font-size: 105px;
+.die {
+  font-size: 100px;
   line-height: 1.4;
-  margin: 10px;
-  user-select: none;
 }
 
-.dice.shake {
-  animation: shake 0.35s;
-}
+.die.shake { animation: shake .35s; }
 
 @keyframes shake {
   0%, 100% { transform: rotate(0); }
@@ -77,7 +70,7 @@ header h1 {
 }
 
 button {
-  border: none;
+  border: 0;
   border-radius: 10px;
   padding: 12px 18px;
   font-size: 15px;
@@ -86,15 +79,8 @@ button {
   margin: 5px;
 }
 
-.primary {
-  background: #2563eb;
-  color: white;
-}
-
-.secondary {
-  background: #e2e8f0;
-  color: #1e293b;
-}
+.primary { background: #2563eb; color: white; }
+.secondary { background: #e2e8f0; color: #1e293b; }
 
 button:disabled {
   background: #94a3b8;
@@ -122,9 +108,7 @@ button:disabled {
   margin-top: 5px;
 }
 
-.table-wrap {
-  overflow-x: auto;
-}
+.table-wrap { overflow-x: auto; }
 
 table {
   width: 100%;
@@ -138,27 +122,23 @@ th, td {
   text-align: center;
 }
 
-th {
-  background: #dbeafe;
-}
+th { background: #dbeafe; }
 
-input {
-  width: 100%;
-  max-width: 180px;
-  padding: 11px;
-  border: 1px solid #94a3b8;
-  border-radius: 8px;
-  font-size: 16px;
-}
-
-.answer-row {
-  margin: 15px 0;
-}
+.answer-row { margin: 15px 0; }
 
 .answer-row label {
   display: block;
   font-weight: bold;
   margin-bottom: 8px;
+}
+
+input {
+  width: 100%;
+  max-width: 220px;
+  padding: 11px;
+  border: 1px solid #94a3b8;
+  border-radius: 8px;
+  font-size: 16px;
 }
 
 .feedback {
@@ -181,16 +161,10 @@ input {
   color: #991b1b;
 }
 
-.note {
-  color: #64748b;
-  font-size: 14px;
-  line-height: 1.6;
-}
-
 @media (max-width: 600px) {
   .container { padding: 12px; }
   .stats { grid-template-columns: 1fr; }
-  .dice { font-size: 85px; }
+  .die { font-size: 78px; }
   .card { padding: 16px; }
 }
 </style>
@@ -201,26 +175,32 @@ input {
 
 <header>
   <h1>🎲 Eksperimen Peluang Dadu</h1>
-  <p>Ayo lakukan percobaan dan temukan peluang berdasarkan hasilnya!</p>
+  <p>Lakukan percobaan, amati hasilnya, lalu tentukan peluang empiris!</p>
 </header>
 
 <section class="card mission">
-  <div class="progress" id="progress">Perintah 1 dari 3</div>
-  <h2 id="missionTitle">Perintah 1</h2>
+  <div class="progress" id="progress"></div>
+  <h2 id="missionTitle"></h2>
   <p id="missionText"></p>
   <p class="note">
-    Klik tombol Kocok Dadu sesuai jumlah percobaan yang diminta.
-    Setiap hasil akan otomatis tercatat dalam tabel.
+    Kocok dadu sebanyak jumlah percobaan yang diminta.
+    Hasil setiap pelemparan akan otomatis masuk ke tabel.
   </p>
 </section>
 
 <section class="card">
   <div class="dice-area">
-    <div class="dice" id="dice" aria-label="Mata dadu">⚀</div>
+    <div class="dice-row">
+      <div class="die" id="die1">⚀</div>
+      <div class="die" id="die2" hidden>⚀</div>
+    </div>
+
     <p id="rollStatus">Dadu siap dikocok!</p>
+
     <button class="primary" id="rollButton" onclick="rollDice()">
       🎲 Kocok Dadu
     </button>
+
     <button class="secondary" onclick="resetExperiment()">
       Ulangi Perintah
     </button>
@@ -232,7 +212,7 @@ input {
       <strong id="total">0</strong>
     </div>
     <div class="stat">
-      Kejadian yang Diamati
+      Frekuensi Kejadian
       <strong id="frequency">0</strong>
     </div>
     <div class="stat">
@@ -245,22 +225,13 @@ input {
 <section class="card">
   <h2>Tabel Hasil Pelemparan</h2>
   <p class="note">
-    Amati mata dadu yang muncul pada setiap percobaan.
+    Amati hasil setiap percobaan dan kejadian yang sesuai dengan perintah.
   </p>
+
   <div class="table-wrap">
     <table>
-      <thead>
-        <tr>
-          <th>Nomor Percobaan</th>
-          <th>Mata Dadu</th>
-          <th>Keterangan</th>
-        </tr>
-      </thead>
-      <tbody id="results">
-        <tr>
-          <td colspan="3">Belum ada hasil pelemparan.</td>
-        </tr>
-      </tbody>
+      <thead id="tableHead"></thead>
+      <tbody id="results"></tbody>
     </table>
   </div>
 </section>
@@ -281,131 +252,173 @@ input {
     <label for="answerProbability">
       2. Berapa peluang empiris kejadian tersebut?
     </label>
-    <input id="answerProbability" type="number" min="0"
-      max="1" step="any" placeholder="Contoh: 0,3 atau 0.3">
+    <input id="answerProbability" type="text"
+      inputmode="decimal" placeholder="Contoh: 0,3 atau 0.3">
     <p class="note">
-      Gunakan rumus: peluang empiris =
-      frekuensi kejadian ÷ jumlah seluruh percobaan.
+      Peluang empiris = frekuensi kejadian ÷ jumlah seluruh percobaan.
       Masukkan jawaban dalam bentuk desimal.
     </p>
   </div>
 
-  <button class="primary" id="checkButton" onclick="checkAnswer()">
+  <button class="primary" id="checkButton"
+    onclick="checkAnswer()" disabled>
     Periksa Jawaban
   </button>
 
-  <div id="feedback" class="feedback" role="status"
-    aria-live="polite"></div>
+  <div id="feedback" class="feedback"
+    role="status" aria-live="polite"></div>
 </section>
 
 <section class="card">
-  <h2>Kesimpulan</h2>
+  <h2>Refleksi</h2>
   <p>
-    Setelah menyelesaikan semua perintah, amati apakah
-    peluang empiris yang diperoleh selalu sama atau berbeda.
-    Bandingkan hasil percobaanmu dengan temanmu!
+    Bandingkan hasil percobaanmu dengan temanmu.
+    Apakah peluang empiris yang diperoleh selalu sama atau berbeda?
   </p>
-  <button class="primary" id="nextButton" onclick="nextMission()"
-    disabled>
+
+  <button class="primary" id="nextButton"
+    onclick="nextMission()" disabled>
     Perintah Berikutnya →
   </button>
+
   <p class="note" id="endMessage"></p>
 </section>
 
 </div>
 
 <script>
-// Daftar perintah dapat diubah sesuai kebutuhan.
+const faces = ["⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
+
+// LEVEL 1: PELEMPARAN SATU DADU
+// LEVEL 2: PELEMPARAN DUA DADU
 const missions = [
   {
-    title: "Perintah 1: Mengamati Mata Dadu 3",
+    level: 1,
+    title: "Perintah 1: Satu Dadu",
     rolls: 10,
+    dice: 1,
     condition: "mata dadu 3",
-    question: "Amati berapa kali mata dadu 3 muncul."
-      + " Tentukan frekuensi dan peluang empirisnya.",
-    test: n => n === 3
+    question: "Berapa peluang munculnya mata dadu 3 dalam 10 kali pelemparan?",
+    test: (a) => a === 3
   },
   {
-    title: "Perintah 2: Mengamati Mata Dadu Genap",
+    level: 1,
+    title: "Perintah 2: Satu Dadu",
     rolls: 15,
+    dice: 1,
     condition: "mata dadu genap (2, 4, atau 6)",
-    question: "Amati berapa kali mata dadu genap muncul."
-      + " Tentukan frekuensi dan peluang empirisnya.",
-    test: n => n % 2 === 0
+    question: "Berapa peluang munculnya mata dadu genap dalam 15 kali pelemparan?",
+    test: (a) => a % 2 === 0
   },
   {
-    title: "Perintah 3: Mengamati Mata Dadu Lebih dari 4",
+    level: 1,
+    title: "Perintah 3: Satu Dadu",
     rolls: 20,
+    dice: 1,
     condition: "mata dadu lebih dari 4 (5 atau 6)",
-    question: "Amati berapa kali mata dadu lebih dari 4 muncul."
-      + " Tentukan frekuensi dan peluang empirisnya.",
-    test: n => n > 4
+    question: "Berapa peluang munculnya mata dadu lebih dari 4 dalam 20 kali pelemparan?",
+    test: (a) => a > 4
+  },
+  {
+    level: 2,
+    title: "Perintah 4: Dua Dadu",
+    rolls: 10,
+    dice: 2,
+    condition: "jumlah kedua mata dadu sama dengan 7",
+    question: "Berapa peluang jumlah mata kedua dadu sama dengan 7 dalam 10 kali pelemparan dua dadu?",
+    test: (a, b) => a + b === 7
+  },
+  {
+    level: 2,
+    title: "Perintah 5: Dua Dadu",
+    rolls: 15,
+    dice: 2,
+    condition: "kedua dadu menunjukkan mata yang sama",
+    question: "Berapa peluang kedua dadu menunjukkan mata yang sama dalam 15 kali pelemparan dua dadu?",
+    test: (a, b) => a === b
+  },
+  {
+    level: 2,
+    title: "Perintah 6: Dua Dadu",
+    rolls: 20,
+    dice: 2,
+    condition: "jumlah kedua mata dadu lebih dari 9",
+    question: "Berapa peluang jumlah mata kedua dadu lebih dari 9 dalam 20 kali pelemparan dua dadu?",
+    test: (a, b) => a + b > 9
   }
 ];
 
-const diceFaces = ["⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
-
-let missionIndex = 0;
+let index = 0;
 let outcomes = [];
-let currentFace = 1;
-let checked = false;
 let completed = false;
 
 const $ = id => document.getElementById(id);
+const mission = () => missions[index];
 
-function currentMission() {
-  return missions[missionIndex];
+function isEvent(o) {
+  return mission().dice === 1
+    ? mission().test(o.a)
+    : mission().test(o.a, o.b);
 }
 
-function countEvents() {
-  return outcomes.filter(currentMission().test).length;
+function eventCount() {
+  return outcomes.filter(isEvent).length;
 }
 
 function renderMission() {
-  const m = currentMission();
+  const m = mission();
 
   $("progress").textContent =
-    `Perintah ${missionIndex + 1} dari ${missions.length}`;
+    `Level ${m.level} — Perintah ${index + 1} dari ${missions.length}`;
+
   $("missionTitle").textContent = m.title;
   $("missionText").textContent =
     `Lakukan ${m.rolls} kali pelemparan. Amati ${m.condition}.`;
-  $("questionText").textContent = m.question;
 
-  $("dice").textContent = diceFaces[currentFace - 1];
+  $("questionText").textContent = m.question;
+  $("die2").hidden = m.dice === 1;
+  $("die1").textContent = faces[0];
+  $("die2").textContent = faces[0];
+
   $("rollStatus").textContent = "Dadu siap dikocok!";
   $("rollButton").disabled = false;
   $("checkButton").disabled = true;
   $("nextButton").disabled = true;
-  $("endMessage").textContent = "";
-
-  $("answerFrequency").value = "";
-  $("answerProbability").value = "";
   $("answerFrequency").disabled = false;
   $("answerProbability").disabled = false;
 
+  $("answerFrequency").value = "";
+  $("answerProbability").value = "";
   $("feedback").className = "feedback";
   $("feedback").textContent = "";
+  $("endMessage").textContent = "";
+
+  $("tableHead").innerHTML = m.dice === 1
+    ? "<tr><th>Percobaan</th><th>Mata Dadu</th><th>Keterangan</th></tr>"
+    : "<tr><th>Percobaan</th><th>Dadu 1</th><th>Dadu 2</th><th>Jumlah</th><th>Keterangan</th></tr>";
 
   renderTable();
   updateStats();
 }
 
 function rollDice() {
-  const m = currentMission();
+  const m = mission();
 
   if (outcomes.length >= m.rolls || completed) return;
 
-  // Menghasilkan mata dadu secara acak dari 1 sampai 6.
-  currentFace = Math.floor(Math.random() * 6) + 1;
-  outcomes.push(currentFace);
+  const a = Math.floor(Math.random() * 6) + 1;
+  const b = m.dice === 2
+    ? Math.floor(Math.random() * 6) + 1
+    : null;
 
-  $("dice").classList.remove("shake");
-  void $("dice").offsetWidth;
-  $("dice").classList.add("shake");
+  outcomes.push({a, b});
 
-  $("dice").textContent = diceFaces[currentFace - 1];
-  $("rollStatus").textContent =
-    `Percobaan ke-${outcomes.length}: mata dadu ${currentFace}`;
+  animateDie("die1", a);
+  if (m.dice === 2) animateDie("die2", b);
+
+  $("rollStatus").textContent = m.dice === 1
+    ? `Percobaan ke-${outcomes.length}: mata dadu ${a}`
+    : `Percobaan ke-${outcomes.length}: dadu ${a} dan ${b}, jumlah ${a + b}`;
 
   renderTable();
   updateStats();
@@ -414,92 +427,89 @@ function rollDice() {
     $("rollButton").disabled = true;
     $("checkButton").disabled = false;
     $("rollStatus").textContent =
-      "Semua percobaan selesai! Sekarang analisis hasilnya.";
+      "Semua percobaan selesai! Jawab pertanyaan di bawah.";
   }
 }
 
+function animateDie(id, value) {
+  const die = $(id);
+  die.classList.remove("shake");
+  void die.offsetWidth;
+  die.classList.add("shake");
+  die.textContent = faces[value - 1];
+}
+
 function renderTable() {
+  const m = mission();
   const tbody = $("results");
   tbody.innerHTML = "";
 
   if (outcomes.length === 0) {
-    tbody.innerHTML =
-      '<tr><td colspan="3">Belum ada hasil pelemparan.</td></tr>';
+    const tr = document.createElement("tr");
+    const td = document.createElement("td");
+    td.colSpan = m.dice === 1 ? 3 : 5;
+    td.textContent = "Belum ada hasil pelemparan.";
+    tr.appendChild(td);
+    tbody.appendChild(tr);
     return;
   }
 
-  outcomes.forEach((face, index) => {
+  outcomes.forEach((o, i) => {
     const tr = document.createElement("tr");
-    const number = document.createElement("td");
-    const result = document.createElement("td");
-    const note = document.createElement("td");
 
-    number.textContent = index + 1;
-    result.textContent = diceFaces[face - 1] + " (" + face + ")";
-    note.textContent = currentMission().test(face)
-      ? "Kejadian yang diamati"
-      : "Bukan kejadian yang diamati";
+    const values = m.dice === 1
+      ? [i + 1, o.a, isEvent(o) ? "Kejadian muncul" : "Bukan kejadian"]
+      : [i + 1, o.a, o.b, o.a + o.b,
+         isEvent(o) ? "Kejadian muncul" : "Bukan kejadian"];
 
-    tr.append(number, result, note);
+    values.forEach(value => {
+      const td = document.createElement("td");
+      td.textContent = value;
+      tr.appendChild(td);
+    });
+
     tbody.appendChild(tr);
   });
 }
 
 function updateStats() {
   $("total").textContent = outcomes.length;
-  $("frequency").textContent = countEvents();
-  $("remaining").textContent =
-    currentMission().rolls - outcomes.length;
+  $("frequency").textContent = eventCount();
+  $("remaining").textContent = mission().rolls - outcomes.length;
 }
 
 function checkAnswer() {
-  const m = currentMission();
-
-  if (outcomes.length !== m.rolls) {
-    showFeedback(
-      "Selesaikan semua pelemparan terlebih dahulu.", false
-    );
-    return;
+  if (outcomes.length !== mission().rolls) {
+    return showFeedback("Selesaikan semua pelemparan terlebih dahulu.", false);
   }
 
-  const frequencyInput = $("answerFrequency").value.trim();
-  const probabilityInput = $("answerProbability").value.trim();
+  const fText = $("answerFrequency").value.trim();
+  const pText = $("answerProbability").value.trim().replace(",", ".");
 
-  if (frequencyInput === "" || probabilityInput === "") {
-    showFeedback("Isi kedua jawaban terlebih dahulu.", false);
-    return;
+  if (fText === "" || pText === "") {
+    return showFeedback("Isi kedua jawaban terlebih dahulu.", false);
   }
 
-  const enteredFrequency = Number(frequencyInput);
-  const enteredProbability = Number(probabilityInput);
+  const f = Number(fText);
+  const p = Number(pText);
 
-  if (!Number.isInteger(enteredFrequency) ||
-      !Number.isFinite(enteredProbability) ||
-      enteredProbability < 0 || enteredProbability > 1) {
-    showFeedback(
-      "Periksa kembali jawabanmu. Frekuensi harus berupa "
-      + "bilangan bulat dan peluang desimal berada antara 0 dan 1.",
+  if (!Number.isInteger(f) || !Number.isFinite(p) || p < 0 || p > 1) {
+    return showFeedback(
+      "Frekuensi harus bilangan bulat dan peluang empiris berupa angka antara 0 dan 1.",
       false
     );
-    return;
   }
 
-  const actualFrequency = countEvents();
-  const actualProbability = actualFrequency / outcomes.length;
+  const actualF = eventCount();
+  const actualP = actualF / outcomes.length;
+  const fCorrect = f === actualF;
+  const pCorrect = Math.abs(p - actualP) < 0.000001;
 
-  const frequencyCorrect = enteredFrequency === actualFrequency;
-  const probabilityCorrect =
-    Math.abs(enteredProbability - actualProbability) < 0.000001;
-
-  if (frequencyCorrect && probabilityCorrect) {
-    checked = true;
+  if (fCorrect && pCorrect) {
     completed = true;
 
     showFeedback(
-      "Benar! Kedua jawabanmu tepat. "
-      + `Frekuensi kejadian = ${actualFrequency}, sedangkan `
-      + `peluang empiris = ${actualFrequency}/${outcomes.length} `
-      + `= ${formatDecimal(actualProbability)}.`,
+      `Benar! Frekuensi kejadian = ${actualF}. Peluang empiris = ${actualF}/${outcomes.length} = ${formatDecimal(actualP)}.`,
       true
     );
 
@@ -507,23 +517,23 @@ function checkAnswer() {
     $("answerProbability").disabled = true;
     $("checkButton").disabled = true;
 
-    if (missionIndex < missions.length - 1) {
+    if (index < missions.length - 1) {
       $("nextButton").disabled = false;
+      $("endMessage").textContent =
+        "Jawaban benar. Lanjutkan ke perintah berikutnya!";
     } else {
       $("endMessage").textContent =
-        "Hebat! Kamu telah menyelesaikan semua perintah.";
+        "Hebat! Semua perintah pada kedua level telah diselesaikan.";
     }
   } else {
     const hints = [];
 
-    if (!frequencyCorrect) {
-      hints.push("Frekuensi belum tepat. Hitung kembali kejadian "
-        + "yang sesuai dengan perintah pada tabel.");
+    if (!fCorrect) {
+      hints.push("Frekuensi belum tepat. Hitung kembali kejadian yang sesuai dengan perintah.");
     }
 
-    if (!probabilityCorrect) {
-      hints.push("Peluang empiris belum tepat. Bagi frekuensi "
-        + "kejadian dengan jumlah seluruh percobaan.");
+    if (!pCorrect) {
+      hints.push("Peluang empiris belum tepat. Bagi frekuensi kejadian dengan jumlah seluruh percobaan.");
     }
 
     showFeedback(hints.join(" "), false);
@@ -531,32 +541,27 @@ function checkAnswer() {
 }
 
 function formatDecimal(value) {
-  return value.toLocaleString("id-ID", {
-    maximumFractionDigits: 4
-  });
+  return value.toLocaleString("id-ID", {maximumFractionDigits: 4});
 }
 
 function showFeedback(message, success) {
   $("feedback").textContent = message;
-  $("feedback").className =
-    success ? "feedback success" : "feedback error";
+  $("feedback").className = success
+    ? "feedback success"
+    : "feedback error";
 }
 
 function resetExperiment() {
   outcomes = [];
-  currentFace = 1;
-  checked = false;
   completed = false;
   renderMission();
 }
 
 function nextMission() {
-  if (!completed || missionIndex >= missions.length - 1) return;
+  if (!completed || index >= missions.length - 1) return;
 
-  missionIndex++;
+  index++;
   outcomes = [];
-  currentFace = 1;
-  checked = false;
   completed = false;
   renderMission();
 }
