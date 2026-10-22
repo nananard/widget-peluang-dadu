@@ -29,15 +29,10 @@ button:disabled{opacity:.5;cursor:not-allowed}
 table{width:100%;border-collapse:collapse;margin-top:16px}
 th,td{border:1px solid #dbe3ef;padding:10px;text-align:center}
 th{background:#eff6ff}
-td{min-width:100px}
-.empty-cell{color:#94a3b8}
+td{min-width:80px}
 .outcome-face{font-size:30px}
 .favorable{background:#dcfce7!important}
 .favorable-label{font-size:12px;color:#15803d;font-weight:bold}
-.answer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
-label{display:block;font-weight:bold;margin-bottom:7px}
-input{width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:8px;font-size:16px}
-.feedback{margin-top:12px;line-height:1.6}
 .actions{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
 @media(max-width:500px){.card{padding:16px}th,td{padding:7px}}
 </style>
@@ -46,54 +41,37 @@ input{width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:8px;font-si
 <div class="container">
 
 <section class="card">
-  <h1>🎲 Eksperimen Peluang Dadu</h1>
-  <p class="muted">Amati setiap kemungkinan hasil pelemparan dadu. Gunakan tabel ruang sampel untuk menentukan banyak anggota kejadian dan peluang teoretis secara mandiri.</p>
+<h1>🎲 Eksperimen Peluang Dadu</h1>
+<p class="muted">Amati kemungkinan hasil pelemparan dadu. Lengkapi ruang sampel, lalu tentukan sendiri banyak anggota kejadian dan peluang teoretis.</p>
 </section>
 
 <section class="card">
-  <div class="level" id="level"></div>
-  <h2 id="question"></h2>
-  <p id="target" class="muted"></p>
-  <p class="muted">Tekan tombol kocok pada setiap kotak untuk menampilkan kemungkinan hasil. Lengkapi semua kotak agar ruang sampel terlihat lengkap.</p>
+<div class="level" id="level"></div>
+<h2 id="question"></h2>
+<p id="target" class="muted"></p>
+<p class="muted">Tekan setiap tombol Kocok untuk menampilkan kemungkinan hasil. Tabel ruang sampel akan terisi secara bertahap.</p>
 </section>
 
 <section class="card experiment">
-  <h2>Eksperimen Pelemparan Dadu</h2>
-  <p class="muted" id="experimentDescription"></p>
-  <div class="dice-layout" id="diceLayout"></div>
-  <p id="experimentStatus" class="muted">Belum ada hasil yang ditampilkan.</p>
-  <button class="secondary" onclick="resetExperiment()">Ulangi Perintah</button>
+<h2>Eksperimen Pelemparan Dadu</h2>
+<p class="muted" id="experimentDescription"></p>
+<div class="dice-layout" id="diceLayout"></div>
+<p id="experimentStatus" class="muted">Belum ada hasil yang ditampilkan.</p>
+<button class="secondary" onclick="resetExperiment()">Ulangi Perintah</button>
 </section>
 
 <section class="card">
-  <h2>Tabel Ruang Sampel</h2>
-  <p class="muted" id="sampleDescription"></p>
-  <div class="table-wrap" id="sampleTable"></div>
+<h2>Tabel Ruang Sampel</h2>
+<p class="muted" id="sampleDescription"></p>
+<div class="table-wrap" id="sampleTable"></div>
 </section>
 
 <section class="card">
-  <h2>Jawaban Murid</h2>
-  <p class="muted">Setelah mengamati tabel ruang sampel, tentukan jawabanmu sendiri.</p>
-  <div class="answer-grid">
-    <div>
-      <label for="nA">Banyak anggota kejadian, n(A)</label>
-      <input id="nA" type="number" min="0" placeholder="Isi jawabanmu">
-    </div>
-    <div>
-      <label for="probability">Peluang teoretis, P(A)</label>
-      <input id="probability" type="text" placeholder="Contoh: 1/6 atau 0,167">
-    </div>
-  </div>
-  <button class="primary" onclick="checkAnswer()" style="margin-top:15px">Periksa Jawaban</button>
-  <div id="feedback" class="feedback"></div>
-</section>
-
-<section class="card">
-  <div class="actions">
-    <button class="secondary" onclick="previousMission()">← Perintah Sebelumnya</button>
-    <button class="primary" onclick="nextMission()">Perintah Berikutnya →</button>
-  </div>
-  <p class="muted" id="progress"></p>
+<div class="actions">
+<button class="secondary" onclick="previousMission()">← Perintah Sebelumnya</button>
+<button class="primary" onclick="nextMission()">Perintah Berikutnya →</button>
+</div>
+<p class="muted" id="progress"></p>
 </section>
 
 </div>
@@ -146,106 +124,143 @@ const missions = [
 let current = 0;
 let revealed = new Set();
 
-function mission(){return missions[current]}
+function mission(){
+  return missions[current];
+}
 
 function outcomes(){
-  const result=[];
-  if(mission().dice===1){
-    for(let a=1;a<=6;a++) result.push([a]);
+  const result = [];
+
+  if(mission().dice === 1){
+    for(let a=1; a<=6; a++){
+      result.push([a]);
+    }
   }else{
-    for(let a=1;a<=6;a++)
-      for(let b=1;b<=6;b++) result.push([a,b]);
+    for(let a=1; a<=6; a++){
+      for(let b=1; b<=6; b++){
+        result.push([a,b]);
+      }
+    }
   }
+
   return result;
 }
 
 function buildDiceLayout(){
-  const m=mission();
-  const layout=document.getElementById("diceLayout");
-  layout.innerHTML="";
+  const m = mission();
+  const layout = document.getElementById("diceLayout");
+  layout.innerHTML = "";
 
   outcomes().forEach((outcome,index)=>{
-    const card=document.createElement("div");
-    card.className="dice-card";
-    card.id="diceCard"+index;
+    const card = document.createElement("div");
+    card.className = "dice-card";
 
-    const title=m.dice===1
-      ? `Dadu kemungkinan ${index+1}`
+    const title = m.dice === 1
+      ? `Kemungkinan ${index+1}`
       : `Pasangan ${index+1}`;
 
-    card.innerHTML=`
+    card.innerHTML = `
       <div class="dice-face" id="face${index}">🎲</div>
       <div class="dice-name">${title}</div>
-      <button class="primary" id="roll${index}" onclick="revealOutcome(${index})">🎲 Kocok</button>
-      <div class="dice-result" id="result${index}">Belum dikocok</div>
+      <button class="primary" id="roll${index}"
+        onclick="revealOutcome(${index})">🎲 Kocok</button>
+      <div class="dice-result" id="result${index}">
+        Belum dikocok
+      </div>
     `;
+
     layout.appendChild(card);
   });
 
   document.getElementById("experimentDescription").textContent =
-    m.dice===1
-      ? "Tersedia 6 tombol. Setiap tombol menampilkan satu kemungkinan mata dadu, dari 1 sampai 6."
-      : "Tersedia 36 tombol. Setiap tombol menampilkan satu pasangan kemungkinan mata dadu pertama dan kedua.";
+    m.dice === 1
+      ? "Tersedia 6 tombol, masing-masing mewakili satu kemungkinan mata dadu."
+      : "Tersedia 36 tombol, masing-masing mewakili satu pasangan kemungkinan hasil dua dadu.";
 }
 
 function buildTable(){
-  const m=mission();
-  const all=outcomes();
-  const container=document.getElementById("sampleTable");
+  const m = mission();
+  const all = outcomes();
+  const container = document.getElementById("sampleTable");
+  let html;
 
-  if(m.dice===1){
-    let html="<table><thead><tr><th>No.</th><th>Mata Dadu</th><th>Keterangan</th></tr></thead><tbody>";
+  if(m.dice === 1){
+    html = `
+      <table>
+      <thead>
+        <tr><th>No.</th><th>Mata Dadu</th><th>Keterangan</th></tr>
+      </thead><tbody>`;
 
-    all.forEach((outcome,i)=>{
-      const shown=revealed.has(i);
-      const good=m.favorable(outcome);
-      html+=`<tr class="${shown&&good?'favorable':''}">
-        <td>${i+1}</td>
-        <td>${shown?`<span class="outcome-face">${faces[outcome[0]]}</span> (${outcome[0]})`:'<span class="empty-cell">—</span>'}</td>
-        <td>${shown?(good?'<span class="favorable-label">Memenuhi kejadian</span>':'Hasil lainnya'):'Belum dikocok'}</td>
-      </tr>`;
+    all.forEach((o,i)=>{
+      const shown = revealed.has(i);
+      const good = m.favorable(o);
+
+      html += `
+        <tr class="${shown && good ? 'favorable' : ''}">
+          <td>${i+1}</td>
+          <td>${shown
+            ? `<span class="outcome-face">${faces[o[0]]}</span> (${o[0]})`
+            : ''}</td>
+          <td>${shown
+            ? (good
+              ? '<span class="favorable-label">Memenuhi kejadian</span>'
+              : 'Hasil lainnya')
+            : ''}</td>
+        </tr>`;
     });
-
-    html+="</tbody></table>";
-    container.innerHTML=html;
   }else{
-    let html="<table><thead><tr><th>No.</th><th>Dadu pertama</th><th>Dadu kedua</th><th>Keterangan</th></tr></thead><tbody>";
+    html = `
+      <table>
+      <thead>
+        <tr>
+          <th>No.</th>
+          <th>Dadu pertama</th>
+          <th>Dadu kedua</th>
+          <th>Keterangan</th>
+        </tr>
+      </thead><tbody>`;
 
-    all.forEach((outcome,i)=>{
-      const shown=revealed.has(i);
-      const good=m.favorable(outcome);
-      html+=`<tr class="${shown&&good?'favorable':''}">
-        <td>${i+1}</td>
-        <td>${shown?`${faces[outcome[0]]} (${outcome[0]})`:'<span class="empty-cell">—</span>'}</td>
-        <td>${shown?`${faces[outcome[1]]} (${outcome[1]})`:'<span class="empty-cell">—</span>'}</td>
-        <td>${shown?(good?'<span class="favorable-label">Memenuhi kejadian</span>':'Hasil lainnya'):'Belum dikocok'}</td>
-      </tr>`;
+    all.forEach((o,i)=>{
+      const shown = revealed.has(i);
+      const good = m.favorable(o);
+
+      html += `
+        <tr class="${shown && good ? 'favorable' : ''}">
+          <td>${i+1}</td>
+          <td>${shown ? `${faces[o[0]]} (${o[0]})` : ''}</td>
+          <td>${shown ? `${faces[o[1]]} (${o[1]})` : ''}</td>
+          <td>${shown
+            ? (good
+              ? '<span class="favorable-label">Memenuhi kejadian</span>'
+              : 'Hasil lainnya')
+            : ''}</td>
+        </tr>`;
     });
-
-    html+="</tbody></table>";
-    container.innerHTML=html;
   }
 
+  html += '</tbody></table>';
+  container.innerHTML = html;
+
   document.getElementById("sampleDescription").textContent =
-    `Terdapat ${all.length} kemungkinan dalam ruang sampel. Tabel akan terisi setelah setiap tombol kocok ditekan.`;
+    `Ruang sampel berisi ${all.length} kemungkinan. Sel hasil masih kosong sampai tombol Kocok yang sesuai ditekan.`;
 }
 
 function revealOutcome(index){
   if(revealed.has(index)) return;
 
-  const outcome=outcomes()[index];
-  const m=mission();
+  const outcome = outcomes()[index];
+  const m = mission();
 
-  // Tiap tombol mewakili satu hasil berbeda dalam ruang sampel.
   document.getElementById("face"+index).textContent =
     outcome.map(n=>faces[n]).join(" ");
+
   document.getElementById("result"+index).textContent =
-    m.dice===1
+    m.dice === 1
       ? `Mata dadu: ${outcome[0]}`
       : `Hasil: (${outcome[0]}, ${outcome[1]})`;
 
-  document.getElementById("roll"+index).textContent="Sudah dikocok";
-  document.getElementById("roll"+index).disabled=true;
+  document.getElementById("roll"+index).textContent = "Sudah dikocok";
+  document.getElementById("roll"+index).disabled = true;
 
   revealed.add(index);
   buildTable();
@@ -255,20 +270,20 @@ function revealOutcome(index){
 }
 
 function renderMission(){
-  const m=mission();
+  const m = mission();
 
-  document.getElementById("level").textContent=
-    `Level ${m.level} — ${m.dice===1?"Satu Dadu":"Dua Dadu"} | Perintah ${current+1} dari ${missions.length}`;
-  document.getElementById("question").textContent=m.question;
-  document.getElementById("target").textContent=m.target;
-  document.getElementById("progress").textContent=
+  document.getElementById("level").textContent =
+    `Level ${m.level} — ${m.dice===1 ? "Satu Dadu" : "Dua Dadu"} | Perintah ${current+1} dari ${missions.length}`;
+
+  document.getElementById("question").textContent = m.question;
+  document.getElementById("target").textContent = m.target;
+  document.getElementById("progress").textContent =
     `Perintah ${current+1} dari ${missions.length}`;
 
-  revealed=new Set();
-  document.getElementById("nA").value="";
-  document.getElementById("probability").value="";
-  document.getElementById("feedback").textContent="";
-  document.getElementById("experimentStatus").textContent="Belum ada hasil yang ditampilkan.";
+  revealed = new Set();
+
+  document.getElementById("experimentStatus").textContent =
+    "Belum ada hasil yang ditampilkan.";
 
   buildDiceLayout();
   buildTable();
@@ -278,60 +293,15 @@ function resetExperiment(){
   renderMission();
 }
 
-function parseProbability(value){
-  const s=value.trim().replace(",",".");
-  if(s.includes("/")){
-    const parts=s.split("/");
-    if(parts.length!==2) return NaN;
-    const a=Number(parts[0]), b=Number(parts[1]);
-    return b===0?NaN:a/b;
-  }
-  return Number(s);
-}
-
-function checkAnswer(){
-  const all=outcomes();
-  const m=mission();
-  const correctN=all.filter(o=>m.favorable(o)).length;
-  const correctP=correctN/all.length;
-  const nValue=document.getElementById("nA").value.trim();
-  const pValue=document.getElementById("probability").value.trim();
-  const feedback=document.getElementById("feedback");
-
-  if(revealed.size<all.length){
-    feedback.style.color="#b45309";
-    feedback.textContent="Kocok semua kemungkinan terlebih dahulu agar ruang sampel lengkap.";
-    return;
-  }
-
-  if(nValue===""||pValue===""){
-    feedback.style.color="#b45309";
-    feedback.textContent="Lengkapi kedua jawaban terlebih dahulu.";
-    return;
-  }
-
-  const nCorrect=Number(nValue)===correctN;
-  const p=parseProbability(pValue);
-  const pCorrect=Number.isFinite(p)&&Math.abs(p-correctP)<0.001;
-
-  if(nCorrect&&pCorrect){
-    feedback.style.color="#15803d";
-    feedback.textContent="Benar! Jawabanmu tepat.";
-  }else{
-    feedback.style.color="#b91c1c";
-    feedback.textContent="Belum tepat. Hitung kembali hasil yang memenuhi kejadian dan gunakan P(A) = n(A)/n(S).";
-  }
-}
-
 function nextMission(){
-  if(current<missions.length-1){
+  if(current < missions.length-1){
     current++;
     renderMission();
   }
 }
 
 function previousMission(){
-  if(current>0){
+  if(current > 0){
     current--;
     renderMission();
   }
