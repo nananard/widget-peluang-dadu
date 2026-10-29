@@ -1,780 +1,1013 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Eksperimen Peluang dengan Dadu</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Media Pembelajaran Peluang</title>
 
 <style>
-* { box-sizing: border-box; }
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f2f5fa;color:#243047;line-height:1.6}
+header{background:#244a87;color:white;text-align:center;padding:25px 15px}
+main{max-width:1100px;margin:auto;padding:16px}
+.panel{background:white;border-radius:13px;padding:20px;margin-bottom:18px;box-shadow:0 3px 12px #0000000c}
+h2,h3{color:#244a87}
+button,select,input{font:inherit}
+button{border:0;border-radius:8px;padding:9px 13px;margin:4px;cursor:pointer;font-weight:bold}
+.primary{background:#2458a6;color:white}
+.secondary{background:#e7eef9;color:#244a87}
+button:disabled{opacity:.6;cursor:not-allowed}
+input,select{padding:9px;border:1px solid #cbd5e1;border-radius:7px;max-width:100%}
+label{font-weight:bold}
+.formula{background:#edf3fc;border-left:4px solid #2458a6;padding:12px;border-radius:8px;overflow-wrap:anywhere}
+.activity{background:#f7faff;border:1px solid #dbe6f5;border-radius:10px;padding:14px;margin-top:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.feedback{font-weight:bold;min-height:24px}
+.muted{color:#64748b;font-size:14px}
+.stats{display:flex;flex-wrap:wrap;gap:10px}
+.stat{flex:1;min-width:120px;background:#edf3fc;padding:12px;border-radius:9px;text-align:center}
+.stat strong{display:block;font-size:23px;color:#244a87}
+.table-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;margin-top:10px}
+th,td{border:1px solid #d7dfeb;padding:8px;text-align:center}
+th{background:#edf3fc;color:#244a87}
+.two-col{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.hidden{display:none}
 
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  color: #243047;
-  background: #f1f5fb;
+/* KOIN */
+.coin-stage{height:180px;display:flex;justify-content:center;align-items:center;perspective:700px}
+.coin{width:120px;height:120px;position:relative;transform-style:preserve-3d}
+.coin-face{position:absolute;inset:0;border-radius:50%;border:7px double #d4a32b;background:radial-gradient(circle at 30% 25%,#fff6b9,#f5c644 60%,#b87b14);display:flex;align-items:center;justify-content:center;flex-direction:column;color:#70440b;font-weight:bold;backface-visibility:hidden;box-shadow:inset 0 0 0 3px #ffe99b}
+.coin-face span{font-size:35px}
+.coin-face small{font-size:13px}
+.coin-back{transform:rotateY(180deg)}
+.coin.flipping{animation:coinflip .8s ease-in-out}
+@keyframes coinflip{
+0%{transform:rotateY(0) rotateX(0)}
+50%{transform:rotateY(900deg) rotateX(360deg) translateY(-25px)}
+100%{transform:rotateY(1800deg) rotateX(720deg)}
+}
+.history{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{border-radius:20px;padding:6px 10px;background:#edf3fc;font-size:13px}
+.chip.head{background:#fff0bd;color:#805700}
+.chip.tail{background:#dceafe;color:#244a87}
+
+/* DADU 3D */
+.dice-card-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-top:15px}
+.dice-card{min-width:0;text-align:center;padding:9px 5px;border:2px solid #dce4f0;border-radius:12px;background:white}
+.dice-card.done{border-color:#269568;background:#effaf4}
+.dice-card button{width:100%;font-size:12px;padding:8px 2px;margin:5px 0 0}
+.dice-card .status{font-size:12px;min-height:35px;color:#64748b}
+.dice-card .status.done-label{color:#26734d;font-weight:bold}
+.dice-row{display:flex;justify-content:center;align-items:center;gap:3px;min-height:95px;overflow:visible}
+.die-stage{width:76px;height:76px;position:relative;perspective:600px;flex-shrink:0;overflow:visible}
+.die-cube{position:absolute;width:76px;height:76px;left:0;top:0;transform-style:preserve-3d;transform:scale(.76) rotateX(0deg) rotateY(0deg);transform-origin:50% 50%}
+.face{position:absolute;left:0;top:0;width:100px;height:100px;border:3px solid #d5deeb;border-radius:13px;background:linear-gradient(145deg,#fff,#edf2fa);display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:12px;backface-visibility:hidden;box-shadow:inset 0 0 8px #aab8cc55}
+.face.front{transform:rotateY(0deg) translateZ(50px)}
+.face.back{transform:rotateY(180deg) translateZ(50px)}
+.face.right{transform:rotateY(90deg) translateZ(50px)}
+.face.left{transform:rotateY(-90deg) translateZ(50px)}
+.face.top{transform:rotateX(90deg) translateZ(50px)}
+.face.bottom{transform:rotateX(-90deg) translateZ(50px)}
+.pip{width:15px;height:15px;border-radius:50%;background:#244a87;align-self:center;justify-self:center}
+.face[data-n="1"] .pip:nth-child(1){grid-area:2/2}
+.face[data-n="2"] .pip:nth-child(1){grid-area:1/1}
+.face[data-n="2"] .pip:nth-child(2){grid-area:3/3}
+.face[data-n="3"] .pip:nth-child(1){grid-area:1/1}
+.face[data-n="3"] .pip:nth-child(2){grid-area:2/2}
+.face[data-n="3"] .pip:nth-child(3){grid-area:3/3}
+.face[data-n="4"] .pip:nth-child(1){grid-area:1/1}
+.face[data-n="4"] .pip:nth-child(2){grid-area:1/3}
+.face[data-n="4"] .pip:nth-child(3){grid-area:3/1}
+.face[data-n="4"] .pip:nth-child(4){grid-area:3/3}
+.face[data-n="5"] .pip:nth-child(1){grid-area:1/1}
+.face[data-n="5"] .pip:nth-child(2){grid-area:1/3}
+.face[data-n="5"] .pip:nth-child(3){grid-area:2/2}
+.face[data-n="5"] .pip:nth-child(4){grid-area:3/1}
+.face[data-n="5"] .pip:nth-child(5){grid-area:3/3}
+.face[data-n="6"] .pip:nth-child(1){grid-area:1/1}
+.face[data-n="6"] .pip:nth-child(2){grid-area:2/1}
+.face[data-n="6"] .pip:nth-child(3){grid-area:3/1}
+.face[data-n="6"] .pip:nth-child(4){grid-area:1/3}
+.face[data-n="6"] .pip:nth-child(5){grid-area:2/3}
+.face[data-n="6"] .pip:nth-child(6){grid-area:3/3}
+
+/* ANIMASI DADU: BERPUTAR, BERGESER, DAN MEMANTUL */
+@keyframes roll{
+  0%{
+    transform:translate3d(0,0,0) scale(.76)
+      rotateX(0deg) rotateY(0deg) rotateZ(0deg)
+  }
+  15%{
+    transform:translate3d(-12px,-22px,0) scale(.82)
+      rotateX(calc(var(--spin-x)*.15))
+      rotateY(calc(var(--spin-y)*.15))
+      rotateZ(calc(var(--spin-z)*.15))
+  }
+  30%{
+    transform:translate3d(15px,-8px,0) scale(.78)
+      rotateX(calc(var(--spin-x)*.35))
+      rotateY(calc(var(--spin-y)*.35))
+      rotateZ(calc(var(--spin-z)*.35))
+  }
+  45%{
+    transform:translate3d(-10px,-27px,0) scale(.84)
+      rotateX(calc(var(--spin-x)*.55))
+      rotateY(calc(var(--spin-y)*.55))
+      rotateZ(calc(var(--spin-z)*.55))
+  }
+  60%{
+    transform:translate3d(12px,-5px,0) scale(.78)
+      rotateX(calc(var(--spin-x)*.75))
+      rotateY(calc(var(--spin-y)*.75))
+      rotateZ(calc(var(--spin-z)*.75))
+  }
+  75%{
+    transform:translate3d(-5px,-12px,0) scale(.80)
+      rotateX(calc(var(--spin-x)*.90))
+      rotateY(calc(var(--spin-y)*.90))
+      rotateZ(calc(var(--spin-z)*.90))
+  }
+  90%{
+    transform:translate3d(3px,-3px,0) scale(.77)
+      rotateX(calc(var(--spin-x)*.97))
+      rotateY(calc(var(--spin-y)*.97))
+      rotateZ(calc(var(--spin-z)*.97))
+  }
+  100%{
+    transform:translate3d(0,0,0) scale(.76)
+      rotateX(var(--spin-x))
+      rotateY(var(--spin-y))
+      rotateZ(var(--spin-z))
+  }
+}
+.die-cube.rolling{
+  animation:roll .9s cubic-bezier(.25,.7,.3,1) both;
+  will-change:transform;
 }
 
-header {
-  background: #244a87;
-  color: white;
-  text-align: center;
-  padding: 22px 15px;
+@media(max-width:800px){
+  .dice-card-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
-
-header h1 { margin: 0 0 8px; }
-header p { margin: 0; line-height: 1.5; }
-
-main {
-  max-width: 1200px;
-  margin: auto;
-  padding: 18px;
-}
-
-.panel {
-  background: white;
-  padding: 20px;
-  margin-bottom: 18px;
-  border-radius: 14px;
-  box-shadow: 0 3px 12px #1c315018;
-}
-
-h2 { color: #244a87; margin-top: 0; }
-
-select, input, button { font: inherit; }
-
-select, input {
-  width: 100%;
-  padding: 11px;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  background: white;
-}
-
-label {
-  display: block;
-  font-weight: bold;
-  margin: 12px 0 5px;
-}
-
-button {
-  border: none;
-  border-radius: 8px;
-  padding: 10px 13px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-button:disabled {
-  cursor: not-allowed;
-  opacity: .55;
-}
-
-.primary { background: #2458a6; color: white; }
-.secondary { background: #e7eef9; color: #244a87; }
-
-.note {
-  font-size: 14px;
-  line-height: 1.6;
-  color: #5a667a;
-}
-
-.stats {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.stat {
-  padding: 14px 8px;
-  text-align: center;
-  background: #edf3fc;
-  border-radius: 10px;
-  font-size: 13px;
-}
-
-.stat strong {
-  display: block;
-  font-size: 25px;
-  margin-top: 6px;
-  color: #244a87;
-}
-
-.dice-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
-  gap: 12px;
-  margin-top: 18px;
-}
-
-.dice-card {
-  background: white;
-  border: 2px solid #dce4f0;
-  border-radius: 12px;
-  padding: 12px 6px;
-  text-align: center;
-  min-width: 0;
-}
-
-/* Kartu dadu tidak diberi highlight hijau */
-.dice-card.observed {
-  border-color: #dce4f0;
-  background: white;
-}
-
-.dice-pair {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  min-height: 83px;
-  margin: 8px 0;
-}
-
-.die-stage {
-  width: 58px;
-  height: 58px;
-  perspective: 350px;
-  flex: 0 0 58px;
-}
-
-.die-cube {
-  position: relative;
-  width: 58px;
-  height: 58px;
-  transform-style: preserve-3d;
-  transform: rotateX(0deg) rotateY(0deg);
-}
-
-.die-cube.rolling {
-  animation: tumble .16s linear infinite;
-}
-
-@keyframes tumble {
-  0%   { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
-  25%  { transform: rotateX(90deg) rotateY(180deg) rotateZ(90deg); }
-  50%  { transform: rotateX(180deg) rotateY(360deg) rotateZ(180deg); }
-  75%  { transform: rotateX(270deg) rotateY(540deg) rotateZ(270deg); }
-  100% { transform: rotateX(360deg) rotateY(720deg) rotateZ(360deg); }
-}
-
-.face {
-  position: absolute;
-  width: 58px;
-  height: 58px;
-  padding: 7px;
-  border: 2px solid #d6deeb;
-  border-radius: 8px;
-  background: white;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  backface-visibility: hidden;
-}
-
-.face.front  { transform: rotateY(0deg) translateZ(29px); }
-.face.back   { transform: rotateY(180deg) translateZ(29px); }
-.face.right  { transform: rotateY(90deg) translateZ(29px); }
-.face.left   { transform: rotateY(-90deg) translateZ(29px); }
-.face.top    { transform: rotateX(90deg) translateZ(29px); }
-.face.bottom { transform: rotateX(-90deg) translateZ(29px); }
-
-.pip {
-  width: 8px;
-  height: 8px;
-  background: #244a87;
-  border-radius: 50%;
-  align-self: center;
-  justify-self: center;
-}
-
-.face[data-number="1"] .pip:nth-child(1) { grid-area: 2 / 2; }
-
-.face[data-number="2"] .pip:nth-child(1) { grid-area: 1 / 1; }
-.face[data-number="2"] .pip:nth-child(2) { grid-area: 3 / 3; }
-
-.face[data-number="3"] .pip:nth-child(1) { grid-area: 1 / 1; }
-.face[data-number="3"] .pip:nth-child(2) { grid-area: 2 / 2; }
-.face[data-number="3"] .pip:nth-child(3) { grid-area: 3 / 3; }
-
-.face[data-number="4"] .pip:nth-child(1) { grid-area: 1 / 1; }
-.face[data-number="4"] .pip:nth-child(2) { grid-area: 1 / 3; }
-.face[data-number="4"] .pip:nth-child(3) { grid-area: 3 / 1; }
-.face[data-number="4"] .pip:nth-child(4) { grid-area: 3 / 3; }
-
-.face[data-number="5"] .pip:nth-child(1) { grid-area: 1 / 1; }
-.face[data-number="5"] .pip:nth-child(2) { grid-area: 1 / 3; }
-.face[data-number="5"] .pip:nth-child(3) { grid-area: 2 / 2; }
-.face[data-number="5"] .pip:nth-child(4) { grid-area: 3 / 1; }
-.face[data-number="5"] .pip:nth-child(5) { grid-area: 3 / 3; }
-
-.face[data-number="6"] .pip:nth-child(1) { grid-area: 1 / 1; }
-.face[data-number="6"] .pip:nth-child(2) { grid-area: 2 / 1; }
-.face[data-number="6"] .pip:nth-child(3) { grid-area: 3 / 1; }
-.face[data-number="6"] .pip:nth-child(4) { grid-area: 1 / 3; }
-.face[data-number="6"] .pip:nth-child(5) { grid-area: 2 / 3; }
-.face[data-number="6"] .pip:nth-child(6) { grid-area: 3 / 3; }
-
-.card-status {
-  min-height: 31px;
-  font-size: 12px;
-  color: #68758a;
-  margin: 5px 0;
-}
-
-.dice-card button {
-  width: 94%;
-  font-size: 12px;
-}
-
-.table-wrap { overflow-x: auto; }
-
-table {
-  border-collapse: collapse;
-  width: 100%;
-  margin-top: 14px;
-}
-
-th, td {
-  border: 1px solid #d7dfeb;
-  padding: 10px;
-  text-align: center;
-  font-size: 14px;
-}
-
-th { background: #edf3fc; color: #244a87; }
-
-/* Highlight hijau hanya untuk baris tabel yang termasuk kejadian */
-tr.event-row td {
-  background: #bbf7d0;
-  color: #166534;
-  border-color: #86d9a6;
-}
-
-.answer-area {
-  display: none;
-  margin-top: 20px;
-  padding: 16px;
-  border-radius: 10px;
-  background: #f4f8ff;
-}
-
-.feedback { font-weight: bold; }
-
-.mission-navigation {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 24px;
-  padding-top: 18px;
-  border-top: 1px solid #d7dfeb;
-}
-
-.mission-navigation button {
-  flex: 1;
-  max-width: 240px;
-  padding: 12px;
-}
-
-@media (max-width: 500px) {
-  main { padding: 10px; }
-  .panel { padding: 13px; }
-  .dice-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .stats { grid-template-columns: 1fr; }
-  .mission-navigation button { font-size: 13px; }
+@media(max-width:430px){
+  .dice-card-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .panel{padding:13px}
 }
 </style>
 </head>
 
 <body>
 <header>
-  <h1>Eksperimen Peluang dengan Dadu</h1>
-  <p>Amati setiap kemungkinan hasil untuk menemukan peluang teoretis.</p>
+<h1>Media Pembelajaran Interaktif: Peluang</h1>
+<p>Jelajahi ruang sampel, lakukan percobaan, dan temukan peluang suatu kejadian.</p>
 </header>
 
 <main>
-  <section class="panel">
-    <h2>1. Pilih Misi Percobaan</h2>
+<section class="panel">
+<h2>Petunjuk Penggunaan</h2>
+<ol>
+<li>Pelajari materi peluang kejadian dan peluang dua kejadian.</li>
+<li>Gunakan percobaan koin untuk mengamati frekuensi relatif.</li>
+<li>Pilih misi dadu dan kocok kartu untuk mengamati ruang sampel.</li>
+<li>Isikan banyak anggota kejadian dan peluang teoretis berdasarkan hasil yang diamati.</li>
+</ol>
+</section>
 
-    <label for="mission">Misi pengamatan</label>
-    <select id="mission">
-      <option value="1">Misi 1 — Dadu menunjukkan angka 3</option>
-      <option value="2">Misi 2 — Dadu menunjukkan angka genap</option>
-      <option value="3">Misi 3 — Dadu menunjukkan angka lebih dari 4</option>
-      <option value="4">Misi 4 — Jumlah dua dadu sama dengan 5</option>
-      <option value="5">Misi 5 — Jumlah dua dadu lebih dari 7</option>
-      <option value="6">Misi 6 — Jumlah dua dadu kurang dari 8</option>
-      <option value="7">Misi 7 — Kedua dadu menunjukkan angka sama</option>
-      <option value="8">Misi 8 — Jumlah dua dadu genap</option>
-      <option value="9">Misi 9 — Dadu pertama lebih besar dari dadu kedua</option>
-    </select>
+<section class="panel">
+<h2>A. Peluang Kejadian (Konsep Dasar)</h2>
 
-    <p id="missionDescription" class="note"></p>
-    <p id="diceDescription"></p>
-  </section>
+<h3>1. Percobaan, Ruang Sampel S, dan Kejadian A</h3>
+<p><b>Percobaan</b> adalah kegiatan yang hasilnya belum diketahui sebelum dilakukan. <b>Ruang sampel (S)</b> merupakan himpunan seluruh hasil yang mungkin, sedangkan <b>kejadian (A)</b> merupakan himpunan bagian dari ruang sampel. Setiap hasil tunggal disebut titik sampel.</p>
 
-  <section class="panel">
-    <h2>2. Kocok Dadu pada Setiap Kartu</h2>
-    <p class="note">
-      Sebelum dikocok, semua dadu menampilkan angka 1.
-      Setelah dikocok, hasil dadu tetap ditampilkan pada kartunya.
-    </p>
+<div class="formula">
+Pelemparan satu dadu: S = {1, 2, 3, 4, 5, 6}.<br>
+Kejadian muncul angka genap: A = {2, 4, 6}.
+</div>
 
-    <div class="stats">
-      <div class="stat">Anggota ruang sampel<strong id="sampleCount">6</strong></div>
-      <div class="stat">Sudah diamati<strong id="observedCount">0</strong></div>
-      <div class="stat">Belum diamati<strong id="remainingCount">6</strong></div>
-    </div>
+<div class="activity">
+<b>Latihan singkat</b>
+<p>Pilih angka yang termasuk kejadian muncul angka genap.</p>
+<div id="evenChoices"></div>
+<p id="evenFeedback" class="feedback"></p>
+</div>
 
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:15px">
-      <button class="primary" id="rollNext">🎲 Kocok Hasil Berikutnya</button>
-      <button class="secondary" id="resetButton">Ulangi Misi</button>
-    </div>
+<h3>2. Cara Menentukan Ruang Sampel</h3>
+<p>Ruang sampel dapat ditentukan dengan mendaftar hasil, menggunakan tabel, atau menggunakan diagram pohon. Untuk dua dadu, setiap hasil ditulis sebagai pasangan berurutan (dadu pertama, dadu kedua).</p>
+<div class="formula">n(S) = 6 × 6 = 36</div>
 
-    <div class="dice-grid" id="diceGrid"></div>
-  </section>
+<div class="two-col">
+<div>
+<h3>Tabel ruang sampel dua dadu</h3>
+<div class="table-wrap"><table id="sampleTable"></table></div>
+</div>
+<div>
+<h3>Diagram pohon sederhana</h3>
+<label for="treeFirst">Pilih hasil dadu pertama:</label><br>
+<select id="treeFirst" onchange="drawTree()">
+<option value="1">1</option>
+<option value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+<option value="5">5</option>
+<option value="6">6</option>
+</select>
+<div id="treeLeaves" class="grid"></div>
+</div>
+</div>
 
-  <section class="panel">
-    <h2>3. Tabel Pengamatan</h2>
+<h3>3. Frekuensi Relatif</h3>
+<p>Frekuensi relatif merupakan perbandingan antara banyak kemunculan suatu hasil dan banyaknya seluruh percobaan.</p>
+<div class="formula">
+Frekuensi relatif kejadian A = frekuensi kejadian A / banyak percobaan
+</div>
 
-    <p class="note">
-      Baris berwarna hijau menunjukkan hasil yang termasuk kejadian pada misi.
-    </p>
+<div class="activity">
+<h3>Percobaan Koin</h3>
+<p>Lempar koin untuk mengamati sisi Angka dan Gambar. Setiap percobaan menambahkan hasil ke riwayat.</p>
 
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>No.</th>
-            <th>Hasil Pengamatan</th>
-            <th>Keterangan Kejadian</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody id="observationBody"></tbody>
-      </table>
-    </div>
+<div class="coin-stage">
+<div id="coinVisual" class="coin">
+<div class="coin-face"><span>A</span><small>ANGKA</small></div>
+<div class="coin-face coin-back"><span>G</span><small>GAMBAR</small></div>
+</div>
+</div>
 
-    <div class="answer-area" id="answerArea">
-      <h2>4. Tentukan Peluang Teoretis</h2>
-      <p>
-        Semua kemungkinan hasil telah diamati. Gunakan ruang sampel dan
-        hasil yang termasuk kejadian untuk mengisi jawaban berikut.
-      </p>
+<div style="text-align:center">
+<button class="primary" id="flipOnce">Lempar 1 Kali</button>
+<button class="primary" id="flipTen">Lempar 10 Kali</button>
+<button class="secondary" id="resetCoin">Ulangi Percobaan</button>
+</div>
 
-      <label for="nA">Banyak anggota kejadian, n(A)</label>
-      <input id="nA" type="number" min="0" step="1"
-             placeholder="Tuliskan jawabanmu">
+<p id="coinResult" class="feedback" aria-live="polite">Koin siap dilempar.</p>
 
-      <label for="pA">Peluang teoretis, P(A)</label>
-      <input id="pA" type="text"
-             placeholder="Contoh: 1/6 atau 0,167">
+<div class="stats">
+<div class="stat">Jumlah percobaan<strong id="coinTotal">0</strong></div>
+<div class="stat">Angka<strong id="headsTotal">0</strong><span id="headsPercent">0%</span></div>
+<div class="stat">Gambar<strong id="tailsTotal">0</strong><span id="tailsPercent">0%</span></div>
+</div>
 
-      <button class="primary" id="checkButton" style="margin-top:12px">
-        Periksa Jawaban
-      </button>
+<h4>Riwayat hasil</h4>
+<div id="coinHistory" class="history"><span class="muted">Belum ada hasil.</span></div>
+</div>
 
-      <p id="feedback" class="feedback" aria-live="polite"></p>
+<h3>4. Peluang Teoretis Suatu Kejadian</h3>
+<p>Jika semua titik sampel memiliki peluang sama, peluang kejadian A dapat ditentukan dengan membandingkan banyak anggota kejadian A dengan banyak anggota ruang sampel.</p>
+<div class="formula">P(A) = n(A) / n(S)</div>
+<p>Nilai peluang berada antara 0 dan 1. Peluang 0 berarti kejadian mustahil, sedangkan peluang 1 berarti kejadian pasti.</p>
 
-      <!-- Navigasi misi berada paling bawah setelah bagian jawaban peluang -->
-      <div class="mission-navigation">
-        <button class="secondary" id="previousMission">
-          ← Misi Sebelumnya
-        </button>
-        <button class="primary" id="nextMission">
-          Misi Selanjutnya →
-        </button>
-      </div>
-    </div>
-  </section>
+<h3>5. Peluang Komplemen</h3>
+<p>Komplemen A, ditulis Aᶜ, merupakan kejadian bahwa A tidak terjadi.</p>
+<div class="formula">P(Aᶜ) = 1 − P(A)</div>
+
+<h3>6. Frekuensi Harapan</h3>
+<p>Frekuensi harapan adalah banyak kemunculan yang diperkirakan dari suatu kejadian dalam sejumlah percobaan.</p>
+<div class="formula">Fₕ(A) = n × P(A)</div>
+
+<div class="activity">
+<label for="fhN">Banyak percobaan (n)</label><br>
+<input id="fhN" type="number" min="0" value="60">
+<br>
+<label for="fhP">Peluang kejadian P(A)</label><br>
+<input id="fhP" type="number" min="0" max="1" step="0.01" value="0.5">
+<br>
+<button class="primary" onclick="calcExpected()">Hitung Frekuensi Harapan</button>
+<p id="fhResult" class="feedback"></p>
+</div>
+</section>
+
+<section class="panel">
+<h2>B. Peluang Dua Kejadian</h2>
+
+<h3>1. Dua Kejadian Saling Lepas</h3>
+<p>Dua kejadian saling lepas jika keduanya tidak dapat terjadi secara bersamaan.</p>
+<div class="formula">P(A ∪ B) = P(A) + P(B)</div>
+
+<h3>2. Dua Kejadian Tidak Saling Lepas</h3>
+<p>Dua kejadian tidak saling lepas jika terdapat hasil yang menjadi anggota kedua kejadian.</p>
+<div class="formula">P(A ∪ B) = P(A) + P(B) − P(A ∩ B)</div>
+
+<h3>3. Dua Kejadian Saling Bebas</h3>
+<p>Dua kejadian saling bebas apabila terjadinya kejadian pertama tidak memengaruhi peluang kejadian kedua.</p>
+<div class="formula">P(A ∩ B) = P(A) × P(B)</div>
+
+<div class="activity">
+<h3>Percobaan Koin dan Dadu</h3>
+<p>Koin dan dadu dilempar bersama-sama satu kali. Misalkan A adalah kejadian muncul sisi Gambar pada koin, dan B adalah kejadian muncul angka 6 pada dadu.</p>
+<p>Jika keduanya saling bebas, peluang keduanya terjadi adalah:</p>
+<div class="formula">P(A ∩ B) = 1/2 × 1/6 = 1/12</div>
+
+<div class="coin-stage" style="min-height:140px">
+<div id="indCoin" class="coin" style="transform:rotateY(0deg)">
+<div class="coin-face"><span>A</span><small>ANGKA</small></div>
+<div class="coin-face coin-back"><span>G</span><small>GAMBAR</small></div>
+</div>
+</div>
+
+<div class="dice-row" style="justify-content:center">
+<div class="die-stage"><div class="die-cube" id="indDie"></div></div>
+</div>
+
+<div style="text-align:center">
+<button class="primary" id="indOnce">Lakukan 1 Percobaan</button>
+<button class="primary" id="indTen">Lakukan 10 Percobaan</button>
+<button class="secondary" id="indReset">Ulangi</button>
+</div>
+
+<p id="indResult" class="feedback"></p>
+
+<div class="stats">
+<div class="stat">Jumlah percobaan<strong id="indTotal">0</strong></div>
+<div class="stat">Koin Gambar<strong id="indCoinCount">0</strong></div>
+<div class="stat">Dadu angka 6<strong id="indDieCount">0</strong></div>
+<div class="stat">Keduanya terjadi<strong id="indBothCount">0</strong></div>
+</div>
+
+<p id="indFrequency" class="feedback">Frekuensi relatif kejadian bersama: 0%</p>
+<div id="indHistory" class="history"></div>
+</div>
+
+<h3>4. Peluang Bersyarat</h3>
+<p>Peluang bersyarat adalah peluang kejadian A terjadi dengan syarat kejadian B sudah terjadi, dengan P(B) lebih besar dari nol.</p>
+<div class="formula">P(A | B) = P(A ∩ B) / P(B)</div>
+</section>
+
+<section class="panel">
+<h2>C. Eksperimen Ruang Sampel dengan Dadu 3D</h2>
+<p>Pilih misi, kemudian kocok kartu satu per satu. Misi satu dadu memiliki 6 kemungkinan hasil, sedangkan misi dua dadu memiliki 36 pasangan hasil.</p>
+
+<label for="mission">Pilih misi:</label><br>
+<select id="mission">
+<option value="1">Misi 1 — Satu dadu: muncul angka 3</option>
+<option value="2">Misi 2 — Satu dadu: muncul angka genap</option>
+<option value="3">Misi 3 — Satu dadu: angka lebih dari 4</option>
+<option value="4">Misi 4 — Dua dadu: jumlah sama dengan 5</option>
+<option value="5">Misi 5 — Dua dadu: jumlah lebih dari 7</option>
+<option value="6">Misi 6 — Dua dadu: jumlah kurang dari 8</option>
+<option value="7">Misi 7 — Dua dadu: angka sama</option>
+<option value="8">Misi 8 — Dua dadu: jumlah genap</option>
+<option value="9">Misi 9 — Dua dadu: dadu pertama lebih besar</option>
+</select>
+
+<p id="missionDescription" class="formula"></p>
+
+<div class="stats">
+<div class="stat">Banyak ruang sampel<strong id="sampleCount">6</strong></div>
+<div class="stat">Hasil diamati<strong id="observedCount">0</strong></div>
+<div class="stat">Belum diamati<strong id="remainingCount">6</strong></div>
+</div>
+
+<div>
+<button class="primary" id="rollButton">Kocok Hasil Berikutnya</button>
+<button class="secondary" id="resetButton">Ulangi Misi</button>
+</div>
+
+<p id="resultText" class="feedback" aria-live="polite">Pilih kartu untuk mulai mengocok.</p>
+
+<div id="outcomeGrid" class="dice-card-grid"></div>
+
+<div id="answerArea" class="activity hidden">
+<h3>Temukan n(A) dan P(A)</h3>
+<p>Setelah semua kartu diamati, tentukan banyak hasil yang memenuhi kejadian dan peluang teoretisnya.</p>
+
+<label for="nA">Banyak anggota kejadian, n(A)</label><br>
+<input id="nA" type="number" min="0">
+<br>
+<label for="pA">Peluang teoretis, P(A)</label><br>
+<input id="pA" type="text" placeholder="Contoh: 1/6">
+<br>
+<button class="primary" id="checkButton">Periksa Jawaban</button>
+<p id="feedback" class="feedback"></p>
+</div>
+
+<h3>Tabel Pengamatan</h3>
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>No.</th><th>Hasil</th><th>Keterangan Kejadian</th><th>Status</th></tr>
+</thead>
+<tbody id="observationBody"></tbody>
+</table>
+</div>
+</section>
 </main>
 
 <script>
-const missions = {
-  1: {
-    dice: 1,
-    description: "Kejadian yang diteliti adalah munculnya angka 3.",
-    event: ([a]) => a === 3
-  },
-  2: {
-    dice: 1,
-    description: "Kejadian yang diteliti adalah munculnya angka genap.",
-    event: ([a]) => a % 2 === 0
-  },
-  3: {
-    dice: 1,
-    description: "Kejadian yang diteliti adalah munculnya angka lebih dari 4.",
-    event: ([a]) => a > 4
-  },
-  4: {
-    dice: 2,
-    description: "Kejadian yang diteliti adalah jumlah dua angka sama dengan 5.",
-    event: ([a,b]) => a + b === 5
-  },
-  5: {
-    dice: 2,
-    description: "Kejadian yang diteliti adalah jumlah dua angka lebih dari 7.",
-    event: ([a,b]) => a + b > 7
-  },
-  6: {
-    dice: 2,
-    description: "Kejadian yang diteliti adalah jumlah dua angka kurang dari 8.",
-    event: ([a,b]) => a + b < 8
-  },
-  7: {
-    dice: 2,
-    description: "Kejadian yang diteliti adalah kedua dadu menunjukkan angka sama.",
-    event: ([a,b]) => a === b
-  },
-  8: {
-    dice: 2,
-    description: "Kejadian yang diteliti adalah jumlah dua angka genap.",
-    event: ([a,b]) => (a + b) % 2 === 0
-  },
-  9: {
-    dice: 2,
-    description: "Kejadian yang diteliti adalah dadu pertama lebih besar daripada dadu kedua.",
-    event: ([a,b]) => a > b
-  }
-};
+/* UTILITAS DADU 3D */
+function createDieFaces(cube){
+  cube.innerHTML='';
 
-const faceDefinitions = [
-  ["front", 1],
-  ["back", 6],
-  ["right", 3],
-  ["left", 4],
-  ["top", 5],
-  ["bottom", 2]
-];
+  const sides=[
+    ['front',1],
+    ['back',6],
+    ['right',3],
+    ['left',4],
+    ['top',2],
+    ['bottom',5]
+  ];
 
-const missionSelect = document.getElementById("mission");
-const diceGrid = document.getElementById("diceGrid");
-const observationBody = document.getElementById("observationBody");
+  sides.forEach(([side,n])=>{
+    const face=document.createElement('div');
+    face.className='face '+side;
+    face.dataset.n=n;
 
-let missionId = 1;
-let outcomes = [];
-let observed = new Set();
-let rollingKeys = new Set();
-let displayedResults = new Map();
-
-function keyOf(outcome) {
-  return outcome.join("-");
-}
-
-function labelOf(outcome) {
-  return outcome.length === 1
-    ? String(outcome[0])
-    : `(${outcome[0]}, ${outcome[1]})`;
-}
-
-function makeOutcomes() {
-  outcomes = [];
-
-  if (missions[missionId].dice === 1) {
-    for (let a = 1; a <= 6; a++) outcomes.push([a]);
-  } else {
-    for (let a = 1; a <= 6; a++) {
-      for (let b = 1; b <= 6; b++) outcomes.push([a, b]);
+    for(let i=0;i<n;i++){
+      const pip=document.createElement('span');
+      pip.className='pip';
+      face.appendChild(pip);
     }
-  }
 
-  displayedResults.clear();
-
-  outcomes.forEach(outcome => {
-    displayedResults.set(keyOf(outcome), outcome.map(() => 1));
+    cube.appendChild(face);
   });
 }
 
-function makeFace(faceName, number) {
-  const face = document.createElement("div");
-  face.className = `face ${faceName}`;
-  face.dataset.number = number;
+function setDieFace(cube,n){
+  const rotations={
+    1:[0,0],
+    2:[-90,0],
+    3:[0,-90],
+    4:[0,90],
+    5:[90,0],
+    6:[0,180]
+  };
 
-  for (let i = 0; i < number; i++) {
-    const pip = document.createElement("span");
-    pip.className = "pip";
-    face.appendChild(pip);
-  }
+  const [x,y]=rotations[n];
 
-  return face;
+  cube.style.animation='none';
+  cube.classList.remove('rolling');
+  cube.style.transform=`scale(.76) rotateX(${x}deg) rotateY(${y}deg)`;
 }
 
-function makeDie(number, uniqueId) {
-  const stage = document.createElement("div");
-  stage.className = "die-stage";
+/* FUNGSI KOCOK DADU DENGAN GERAKAN 3D */
+function rollDie(cube,n,duration=900){
+  return new Promise(resolve=>{
+    cube.classList.remove('rolling');
+    cube.style.animation='none';
 
-  const cube = document.createElement("div");
-  cube.className = "die-cube";
-  cube.id = uniqueId;
+    // Memulai ulang animasi agar setiap kocokan bergerak.
+    void cube.offsetWidth;
 
-  faceDefinitions.forEach(([faceName, defaultNumber]) => {
-    const visibleNumber = faceName === "front" ? number : defaultNumber;
-    cube.appendChild(makeFace(faceName, visibleNumber));
+    // Jumlah putaran dibuat acak.
+    const spinX=(4+Math.floor(Math.random()*3))*360;
+    const spinY=(4+Math.floor(Math.random()*3))*360;
+    const spinZ=(2+Math.floor(Math.random()*3))*360;
+
+    cube.style.setProperty('--spin-x',`${spinX}deg`);
+    cube.style.setProperty('--spin-y',`${spinY}deg`);
+    cube.style.setProperty('--spin-z',`${spinZ}deg`);
+    cube.style.animation='';
+
+    cube.classList.add('rolling');
+
+    setTimeout(()=>{
+      cube.classList.remove('rolling');
+      cube.style.animation='none';
+
+      // Setelah animasi selesai, tampilkan sisi sesuai hasil.
+      setDieFace(cube,n);
+
+      cube.style.removeProperty('--spin-x');
+      cube.style.removeProperty('--spin-y');
+      cube.style.removeProperty('--spin-z');
+
+      resolve();
+    },duration);
   });
-
-  cube.style.transform = "rotateX(0deg) rotateY(0deg)";
-  stage.appendChild(cube);
-
-  return stage;
 }
 
-function createCard(outcome) {
-  const key = keyOf(outcome);
-  const isObserved = observed.has(key);
-  const isRolling = rollingKeys.has(key);
-  const savedFaces = displayedResults.get(key) || outcome.map(() => 1);
+/* LATIHAN ANGKA GENAP */
+const evenChoices=document.getElementById('evenChoices');
 
-  const card = document.createElement("div");
-  card.className = "dice-card" + (isObserved ? " observed" : "");
+[1,2,3,4,5,6].forEach(n=>{
+  const b=document.createElement('button');
+  b.className='secondary';
+  b.textContent=n;
 
-  // Tidak ada tulisan "Kemungkinan" di atas dadu.
-  const pair = document.createElement("div");
-  pair.className = "dice-pair";
+  b.onclick=()=>{
+    const f=document.getElementById('evenFeedback');
 
-  pair.appendChild(makeDie(savedFaces[0], `die-${key}-a`));
+    f.textContent=n%2===0
+      ?'Benar! '+n+' merupakan bilangan genap.'
+      :n+' merupakan bilangan ganjil. Coba pilih angka genap.';
 
-  if (outcome.length === 2) {
-    pair.appendChild(makeDie(savedFaces[1], `die-${key}-b`));
-  }
+    f.style.color=n%2===0?'#26734d':'#b91c1c';
+  };
 
-  const status = document.createElement("div");
-  status.className = "card-status";
-  status.textContent = isRolling
-    ? "Dadu sedang berputar..."
-    : isObserved
-      ? `Hasil: ${savedFaces.join(" dan ")}`
-      : "Belum dikocok";
-
-  const button = document.createElement("button");
-  button.className = isObserved ? "secondary" : "primary";
-  button.textContent = isObserved ? "Kocok Lagi" : "Kocok";
-  button.disabled = rollingKeys.size > 0;
-  button.addEventListener("click", () => rollCard(outcome));
-
-  card.append(pair, status, button);
-  return card;
-}
-
-function renderGrid() {
-  diceGrid.innerHTML = "";
-  outcomes.forEach(outcome => diceGrid.appendChild(createCard(outcome)));
-}
-
-function renderTable() {
-  observationBody.innerHTML = "";
-
-  outcomes.forEach(outcome => {
-    const key = keyOf(outcome);
-    if (!observed.has(key)) return;
-
-    const isEvent = missions[missionId].event(outcome);
-    const row = document.createElement("tr");
-
-    // Highlight hijau hanya diterapkan pada baris kejadian di tabel.
-    if (isEvent) row.classList.add("event-row");
-
-    const numberCell = document.createElement("td");
-    numberCell.textContent = observationBody.children.length + 1;
-
-    const resultCell = document.createElement("td");
-    resultCell.textContent = labelOf(outcome);
-
-    const eventCell = document.createElement("td");
-    eventCell.textContent = isEvent ? "Termasuk kejadian" : "Bukan kejadian";
-
-    const statusCell = document.createElement("td");
-    statusCell.textContent = "Sudah diamati";
-
-    row.append(numberCell, resultCell, eventCell, statusCell);
-    observationBody.appendChild(row);
-  });
-
-  document.getElementById("sampleCount").textContent = outcomes.length;
-  document.getElementById("observedCount").textContent = observed.size;
-  document.getElementById("remainingCount").textContent =
-    outcomes.length - observed.size;
-
-  document.getElementById("answerArea").style.display =
-    observed.size === outcomes.length ? "block" : "none";
-
-  document.getElementById("previousMission").disabled =
-    missionId === 1 || observed.size !== outcomes.length;
-
-  document.getElementById("nextMission").disabled =
-    missionId === 9 || observed.size !== outcomes.length;
-}
-
-function renderAll() {
-  renderGrid();
-  renderTable();
-}
-
-function rollCard(outcome) {
-  if (rollingKeys.size > 0) return;
-
-  const key = keyOf(outcome);
-  rollingKeys.add(key);
-  renderGrid();
-
-  const cubeA = document.getElementById(`die-${key}-a`);
-  const cubeB = outcome.length === 2
-    ? document.getElementById(`die-${key}-b`)
-    : null;
-
-  const cubes = [cubeA, cubeB].filter(Boolean);
-  cubes.forEach(cube => cube.classList.add("rolling"));
-
-  const spinTimer = setInterval(() => {
-    cubes.forEach(cube => {
-      cube.style.transform =
-        `rotateX(${Math.random() * 720}deg) ` +
-        `rotateY(${Math.random() * 720}deg) ` +
-        `rotateZ(${Math.random() * 720}deg)`;
-    });
-  }, 90);
-
-  setTimeout(() => {
-    clearInterval(spinTimer);
-
-    // Simpan hasil kartu agar tidak kembali ke angka 1.
-    displayedResults.set(key, [...outcome]);
-    observed.add(key);
-    rollingKeys.delete(key);
-
-    renderAll();
-  }, 1600);
-}
-
-function rollNext() {
-  if (rollingKeys.size > 0) return;
-
-  const next = outcomes.find(outcome => !observed.has(keyOf(outcome)));
-
-  if (next) {
-    rollCard(next);
-  } else {
-    alert("Semua kemungkinan hasil sudah diamati.");
-  }
-}
-
-function resetMission() {
-  if (rollingKeys.size > 0) return;
-
-  observed.clear();
-  document.getElementById("nA").value = "";
-  document.getElementById("pA").value = "";
-  document.getElementById("feedback").textContent = "";
-
-  displayedResults.clear();
-  outcomes.forEach(outcome => {
-    displayedResults.set(keyOf(outcome), outcome.map(() => 1));
-  });
-
-  renderAll();
-}
-
-function setupMission() {
-  missionId = Number(missionSelect.value);
-  observed.clear();
-  rollingKeys.clear();
-
-  document.getElementById("missionDescription").textContent =
-    missions[missionId].description;
-
-  document.getElementById("diceDescription").textContent =
-    missions[missionId].dice === 1
-      ? "Terdapat 6 kemungkinan hasil dadu."
-      : "Terdapat 36 kemungkinan pasangan hasil dua dadu.";
-
-  document.getElementById("nA").value = "";
-  document.getElementById("pA").value = "";
-  document.getElementById("feedback").textContent = "";
-
-  makeOutcomes();
-  renderAll();
-}
-
-function navigateMission(nextId) {
-  if (rollingKeys.size > 0) return;
-  if (nextId < 1 || nextId > 9) return;
-  if (observed.size !== outcomes.length) return;
-
-  missionSelect.value = String(nextId);
-  setupMission();
-
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-document.getElementById("rollNext").addEventListener("click", rollNext);
-document.getElementById("resetButton").addEventListener("click", resetMission);
-
-missionSelect.addEventListener("change", () => {
-  if (rollingKeys.size === 0) setupMission();
+  evenChoices.appendChild(b);
 });
 
-document.getElementById("previousMission").addEventListener("click", () => {
-  navigateMission(missionId - 1);
-});
+/* TABEL DAN DIAGRAM POHON */
+function makeSampleTable(){
+  const table=document.getElementById('sampleTable');
+  let html='<tr><th>Dadu 1 \\ Dadu 2</th>';
 
-document.getElementById("nextMission").addEventListener("click", () => {
-  navigateMission(missionId + 1);
-});
+  for(let b=1;b<=6;b++){
+    html+=`<th>${b}</th>`;
+  }
 
-document.getElementById("checkButton").addEventListener("click", () => {
-  const nText = document.getElementById("nA").value.trim();
-  const pText = document.getElementById("pA").value.trim();
-  const feedback = document.getElementById("feedback");
+  html+='</tr>';
 
-  if (nText === "" || pText === "") {
-    feedback.textContent = "Lengkapi kedua jawaban terlebih dahulu.";
-    feedback.style.color = "#b45309";
+  for(let a=1;a<=6;a++){
+    html+=`<tr><th>${a}</th>`;
+
+    for(let b=1;b<=6;b++){
+      html+=`<td>(${a}, ${b})</td>`;
+    }
+
+    html+='</tr>';
+  }
+
+  table.innerHTML=html;
+}
+
+function drawTree(){
+  const a=Number(document.getElementById('treeFirst').value);
+
+  document.getElementById('treeLeaves').innerHTML=
+    Array.from(
+      {length:6},
+      (_,i)=>`<div class="formula">(${a}, ${i+1})</div>`
+    ).join('');
+}
+
+makeSampleTable();
+drawTree();
+
+/* FREKUENSI HARAPAN */
+function calcExpected(){
+  const n=Number(document.getElementById('fhN').value);
+  const p=Number(document.getElementById('fhP').value);
+  const result=document.getElementById('fhResult');
+
+  if(
+    n<0 ||
+    p<0 ||
+    p>1 ||
+    document.getElementById('fhN').value==='' ||
+    document.getElementById('fhP').value===''
+  ){
+    result.textContent='Masukkan n ≥ 0 dan peluang antara 0 sampai 1.';
     return;
   }
 
-  const nAnswer = Number(nText);
-  const normalized = pText.replace(",", ".");
-  let pAnswer;
+  result.textContent=`Fₕ(A) = ${n} × ${p} = ${n*p}.`;
+}
 
-  if (normalized.includes("/")) {
-    const parts = normalized.split("/");
+/* PERCOBAAN KOIN FREKUENSI RELATIF */
+let coinFlips=[];
+let coinBusy=false;
+const coinVisual=document.getElementById('coinVisual');
 
-    if (
-      parts.length !== 2 ||
-      parts.some(part => part.trim() === "") ||
-      !Number.isFinite(Number(parts[0])) ||
-      !Number.isFinite(Number(parts[1])) ||
-      Number(parts[1]) === 0
-    ) {
-      feedback.textContent = "Format pecahan belum tepat.";
-      feedback.style.color = "#b45309";
-      return;
+function updateCoinStats(){
+  const total=coinFlips.length;
+  const heads=coinFlips.filter(x=>x==='A').length;
+  const tails=total-heads;
+
+  document.getElementById('coinTotal').textContent=total;
+  document.getElementById('headsTotal').textContent=heads;
+  document.getElementById('tailsTotal').textContent=tails;
+
+  document.getElementById('headsPercent').textContent=
+    (total?heads/total*100:0).toFixed(1)+'%';
+
+  document.getElementById('tailsPercent').textContent=
+    (total?tails/total*100:0).toFixed(1)+'%';
+
+  document.getElementById('coinHistory').innerHTML=coinFlips.length
+    ?coinFlips.map((x,i)=>
+      `<span class="chip ${x==='A'?'head':'tail'}">${i+1}. ${x==='A'?'Angka':'Gambar'}</span>`
+    ).join('')
+    :'<span class="muted">Belum ada hasil.</span>';
+}
+
+function flipCoin(times){
+  if(coinBusy)return;
+
+  coinBusy=true;
+
+  const buttons=['flipOnce','flipTen','resetCoin'];
+  buttons.forEach(id=>document.getElementById(id).disabled=true);
+
+  let count=0;
+
+  function one(){
+    const side=Math.random()<.5?'A':'G';
+
+    coinVisual.classList.remove('flipping');
+    void coinVisual.offsetWidth;
+    coinVisual.classList.add('flipping');
+
+    setTimeout(()=>{
+      coinVisual.classList.remove('flipping');
+
+      coinVisual.style.transform=
+        side==='A'?'rotateY(0deg)':'rotateY(180deg)';
+
+      coinFlips.push(side);
+      count++;
+
+      updateCoinStats();
+
+      document.getElementById('coinResult').textContent=
+        `Hasil: ${side==='A'?'Angka':'Gambar'}.`;
+
+      if(count<times){
+        setTimeout(one,80);
+      }else{
+        coinBusy=false;
+        buttons.forEach(id=>document.getElementById(id).disabled=false);
+
+        document.getElementById('coinResult').textContent=
+          `Selesai ${times} percobaan.`;
+      }
+    },times===1?750:120);
+  }
+
+  one();
+}
+
+document.getElementById('flipOnce').onclick=()=>flipCoin(1);
+document.getElementById('flipTen').onclick=()=>flipCoin(10);
+
+document.getElementById('resetCoin').onclick=()=>{
+  if(coinBusy)return;
+
+  coinFlips=[];
+  coinVisual.style.transform='rotateY(0deg)';
+
+  document.getElementById('coinResult').textContent='Koin siap dilempar.';
+
+  updateCoinStats();
+};
+
+updateCoinStats();
+
+/* EKSPERIMEN KOIN DAN DADU SALING BEBAS */
+const indDie=document.getElementById('indDie');
+
+createDieFaces(indDie);
+setDieFace(indDie,1);
+
+let indTrials=0;
+let indHeads=0;
+let indSix=0;
+let indBoth=0;
+let indBusy=false;
+let indHistory=[];
+
+function updateIndependent(){
+  document.getElementById('indTotal').textContent=indTrials;
+  document.getElementById('indCoinCount').textContent=indHeads;
+  document.getElementById('indDieCount').textContent=indSix;
+  document.getElementById('indBothCount').textContent=indBoth;
+
+  document.getElementById('indFrequency').textContent=
+    'Frekuensi relatif kejadian bersama: '+
+    (indTrials?((indBoth/indTrials)*100).toFixed(1):'0')+'%';
+
+  document.getElementById('indHistory').innerHTML=
+    indHistory.map((x,i)=>
+      `<span class="chip ${x.both?'head':''}">${i+1}. ${x.coin==='G'?'Gambar':'Angka'}, dadu ${x.die}${x.both?' ✓':''}</span>`
+    ).join('');
+}
+
+function independentTrial(times){
+  if(indBusy)return;
+
+  indBusy=true;
+
+  ['indOnce','indTen','indReset'].forEach(id=>{
+    document.getElementById(id).disabled=true;
+  });
+
+  let done=0;
+
+  function next(){
+    const coin=Math.random()<.5?'A':'G';
+    const die=1+Math.floor(Math.random()*6);
+    const both=coin==='G'&&die===6;
+
+    const indCoin=document.getElementById('indCoin');
+
+    indCoin.classList.remove('flipping');
+    void indCoin.offsetWidth;
+    indCoin.classList.add('flipping');
+
+    rollDie(indDie,die,times===1?750:250).then(()=>{
+      indCoin.classList.remove('flipping');
+
+      indCoin.style.transform=
+        coin==='G'?'rotateY(180deg)':'rotateY(0deg)';
+
+      indTrials++;
+
+      if(coin==='G')indHeads++;
+      if(die===6)indSix++;
+      if(both)indBoth++;
+
+      indHistory.push({coin,die,both});
+      updateIndependent();
+
+      document.getElementById('indResult').textContent=
+        `Percobaan ${indTrials}: koin ${coin==='G'?'Gambar':'Angka'}, dadu ${die}.`+
+        (both?' Kedua kejadian terjadi!':'');
+
+      done++;
+
+      if(done<times){
+        setTimeout(next,80);
+      }else{
+        indBusy=false;
+
+        ['indOnce','indTen','indReset'].forEach(id=>{
+          document.getElementById(id).disabled=false;
+        });
+      }
+    });
+  }
+
+  next();
+}
+
+document.getElementById('indOnce').onclick=()=>independentTrial(1);
+document.getElementById('indTen').onclick=()=>independentTrial(10);
+
+document.getElementById('indReset').onclick=()=>{
+  if(indBusy)return;
+
+  indTrials=0;
+  indHeads=0;
+  indSix=0;
+  indBoth=0;
+  indHistory=[];
+
+  document.getElementById('indResult').textContent='';
+  document.getElementById('indCoin').style.transform='rotateY(0deg)';
+
+  setDieFace(indDie,1);
+  updateIndependent();
+};
+
+updateIndependent();
+
+/* MISI RUANG SAMPEL DADU */
+const missions={
+  1:{
+    dice:1,
+    desc:'Kejadian: dadu menunjukkan angka 3.',
+    test:a=>a[0]===3
+  },
+  2:{
+    dice:1,
+    desc:'Kejadian: dadu menunjukkan angka genap.',
+    test:a=>a[0]%2===0
+  },
+  3:{
+    dice:1,
+    desc:'Kejadian: dadu menunjukkan angka lebih dari 4.',
+    test:a=>a[0]>4
+  },
+  4:{
+    dice:2,
+    desc:'Kejadian: jumlah dua dadu sama dengan 5.',
+    test:a=>a[0]+a[1]===5
+  },
+  5:{
+    dice:2,
+    desc:'Kejadian: jumlah dua dadu lebih dari 7.',
+    test:a=>a[0]+a[1]>7
+  },
+  6:{
+    dice:2,
+    desc:'Kejadian: jumlah dua dadu kurang dari 8.',
+    test:a=>a[0]+a[1]<8
+  },
+  7:{
+    dice:2,
+    desc:'Kejadian: kedua dadu menunjukkan angka sama.',
+    test:a=>a[0]===a[1]
+  },
+  8:{
+    dice:2,
+    desc:'Kejadian: jumlah dua dadu genap.',
+    test:a=>(a[0]+a[1])%2===0
+  },
+  9:{
+    dice:2,
+    desc:'Kejadian: angka dadu pertama lebih besar daripada dadu kedua.',
+    test:a=>a[0]>a[1]
+  }
+};
+
+let mission=1;
+let outcomes=[];
+let observed=new Set();
+let mainRolling=false;
+
+function outcomeKey(a){
+  return a.join('-');
+}
+
+function outcomeLabel(a){
+  return a.length===1?String(a[0]):`(${a[0]}, ${a[1]})`;
+}
+
+function generateOutcomes(){
+  outcomes=[];
+  const d=missions[mission].dice;
+
+  for(let a=1;a<=6;a++){
+    if(d===1){
+      outcomes.push([a]);
+    }else{
+      for(let b=1;b<=6;b++){
+        outcomes.push([a,b]);
+      }
     }
+  }
+}
 
-    pAnswer = Number(parts[0]) / Number(parts[1]);
-  } else {
-    pAnswer = Number(normalized);
-    if (pAnswer > 1 && pAnswer <= 100) pAnswer /= 100;
+function renderOutcomes(){
+  document.getElementById('sampleCount').textContent=outcomes.length;
+  document.getElementById('observedCount').textContent=observed.size;
+  document.getElementById('remainingCount').textContent=
+    outcomes.length-observed.size;
+
+  const grid=document.getElementById('outcomeGrid');
+  grid.innerHTML='';
+
+  outcomes.forEach((o,i)=>{
+    const key=outcomeKey(o);
+    const done=observed.has(key);
+
+    const card=document.createElement('div');
+    card.className='dice-card'+(done?' done':'');
+
+    card.innerHTML=`
+      <b>Hasil ${outcomeLabel(o)}</b>
+      <div class="dice-row" id="row-${i}"></div>
+      <div class="status ${done?'done-label':''}">
+        ${done?'✓ Sudah diamati':'Belum dikocok'}
+      </div>
+      <button class="${done?'secondary':'primary'}" ${done?'disabled':''}>
+        ${done?'Sudah diamati':'🎲 Kocok'}
+      </button>`;
+
+    const row=card.querySelector('.dice-row');
+
+    o.forEach((n,j)=>{
+      const stage=document.createElement('div');
+      stage.className='die-stage';
+
+      const cube=document.createElement('div');
+      cube.className='die-cube';
+      cube.id=`cardCube-${i}-${j}`;
+
+      stage.appendChild(cube);
+      row.appendChild(stage);
+
+      createDieFaces(cube);
+
+      // Semua dadu berawal dari angka 1.
+      // Setelah dikocok, angka hasil tetap ditampilkan.
+      setDieFace(cube,done?n:1);
+    });
+
+    card.querySelector('button').onclick=()=>observeOutcome(i);
+
+    grid.appendChild(card);
+  });
+
+  document.getElementById('observationBody').innerHTML=
+    outcomes
+      .filter(o=>observed.has(outcomeKey(o)))
+      .map((o,i)=>
+        `<tr>
+          <td>${i+1}</td>
+          <td>${outcomeLabel(o)}</td>
+          <td>${missions[mission].test(o)?'Termasuk kejadian':'Bukan kejadian'}</td>
+          <td>Sudah diamati</td>
+        </tr>`
+      ).join('');
+
+  document.getElementById('answerArea').classList.toggle(
+    'hidden',
+    observed.size!==outcomes.length
+  );
+}
+
+function observeOutcome(i){
+  if(mainRolling||observed.has(outcomeKey(outcomes[i])))return;
+
+  mainRolling=true;
+
+  const o=outcomes[i];
+
+  document.getElementById('rollButton').disabled=true;
+  document.getElementById('resetButton').disabled=true;
+  document.getElementById('mission').disabled=true;
+
+  const tasks=o.map((n,j)=>
+    rollDie(
+      document.getElementById(`cardCube-${i}-${j}`),
+      n,
+      900
+    )
+  );
+
+  Promise.all(tasks).then(()=>{
+    observed.add(outcomeKey(o));
+
+    document.getElementById('resultText').textContent=
+      `Hasil pengamatan: ${outcomeLabel(o)} — `+
+      (missions[mission].test(o)
+        ?'termasuk kejadian yang diteliti.'
+        :'bukan kejadian yang diteliti.');
+
+    mainRolling=false;
+
+    document.getElementById('rollButton').disabled=false;
+    document.getElementById('resetButton').disabled=false;
+    document.getElementById('mission').disabled=false;
+
+    renderOutcomes();
+  });
+}
+
+function setupMission(){
+  if(mainRolling)return;
+
+  mission=Number(document.getElementById('mission').value);
+
+  observed.clear();
+  generateOutcomes();
+
+  document.getElementById('missionDescription').textContent=
+    missions[mission].desc;
+
+  document.getElementById('resultText').textContent=
+    'Tekan tombol Kocok pada kartu untuk mengamati hasil.';
+
+  document.getElementById('nA').value='';
+  document.getElementById('pA').value='';
+  document.getElementById('feedback').textContent='';
+
+  renderOutcomes();
+}
+
+document.getElementById('mission').addEventListener('change',setupMission);
+document.getElementById('resetButton').addEventListener('click',setupMission);
+
+document.getElementById('rollButton').addEventListener('click',()=>{
+  if(mainRolling)return;
+
+  const remaining=outcomes
+    .map((o,i)=>({o,i}))
+    .filter(x=>!observed.has(outcomeKey(x.o)));
+
+  if(remaining.length){
+    observeOutcome(
+      remaining[Math.floor(Math.random()*remaining.length)].i
+    );
+  }else{
+    document.getElementById('resultText').textContent=
+      'Semua hasil telah diamati. Tekan Ulangi Misi untuk memulai lagi.';
+  }
+});
+
+document.getElementById('checkButton').addEventListener('click',()=>{
+  const nRaw=document.getElementById('nA').value.trim();
+
+  const pRaw=document.getElementById('pA').value
+    .trim()
+    .replace(',','.');
+
+  const nA=Number(nRaw);
+  let p;
+
+  if(pRaw.includes('/')){
+    const parts=pRaw.split('/');
+    p=Number(parts[0])/Number(parts[1]);
+  }else{
+    p=Number(pRaw);
   }
 
-  const correctN = outcomes.filter(
-    outcome => missions[missionId].event(outcome)
-  ).length;
+  const count=outcomes.filter(missions[mission].test).length;
+  const expected=count/outcomes.length;
 
-  const correctP = correctN / outcomes.length;
-  const countOK = Number.isInteger(nAnswer) && nAnswer === correctN;
-  const probabilityOK =
-    Number.isFinite(pAnswer) &&
-    Math.abs(pAnswer - correctP) < 0.0001;
+  const ok=
+    nRaw!=='' &&
+    pRaw!=='' &&
+    nA===count &&
+    Number.isFinite(p) &&
+    Math.abs(p-expected)<0.0001;
 
-  if (countOK && probabilityOK) {
-    feedback.textContent = "Benar! Jawabanmu tepat.";
-    feedback.style.color = "#26734d";
-  } else {
-    feedback.textContent =
-      "Belum tepat. Periksa kembali banyak anggota kejadian dan ruang sampelnya.";
-    feedback.style.color = "#b91c1c";
-  }
+  const feedback=document.getElementById('feedback');
+
+  feedback.textContent=ok
+    ?'Benar! Banyak anggota kejadian dan peluang teoretis sudah tepat.'
+    :`Belum tepat. Periksa kembali n(A) dan P(A). Petunjuk: ada ${count} hasil yang memenuhi kejadian dari ${outcomes.length} titik sampel.`;
+
+  feedback.style.color=ok?'#26734d':'#b91c1c';
 });
 
 setupMission();
