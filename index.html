@@ -257,8 +257,14 @@ Frekuensi relatif kejadian A = frekuensi kejadian A / banyak percobaan
 </div>
 
 <h3>4. Peluang Bersyarat</h3>
-<p>Peluang bersyarat adalah peluang kejadian A terjadi dengan syarat kejadian B sudah terjadi, dengan P(B) lebih besar dari nol.</p>
+
+<p><b>a. Peluang kejadian A dengan syarat kejadian B terjadi terlebih dahulu</b></p>
+<p>Peluang kejadian A terjadi ketika diketahui bahwa kejadian B telah terjadi, dengan P(B) lebih besar dari nol.</p>
 <div class="formula">P(A | B) = P(A ∩ B) / P(B)</div>
+
+<p><b>b. Peluang kejadian B dengan syarat kejadian A terjadi terlebih dahulu</b></p>
+<p>Peluang kejadian B terjadi ketika diketahui bahwa kejadian A telah terjadi, dengan P(A) lebih besar dari nol.</p>
+<div class="formula">P(B | A) = P(A ∩ B) / P(A)</div>
 </section>
 
 <section class="panel">
@@ -279,6 +285,7 @@ Frekuensi relatif kejadian A = frekuensi kejadian A / banyak percobaan
 </select>
 
 <p id="missionDescription" class="formula"></p>
+
 <div class="stats">
 <div class="stat">Banyak ruang sampel<strong id="sampleCount">6</strong></div>
 <div class="stat">Hasil diamati<strong id="observedCount">0</strong></div>
@@ -289,29 +296,43 @@ Frekuensi relatif kejadian A = frekuensi kejadian A / banyak percobaan
 <button class="primary" id="rollButton">Kocok Hasil Berikutnya</button>
 <button class="secondary" id="resetButton">Ulangi Misi</button>
 </div>
+
 <p id="resultText" class="feedback" aria-live="polite">Pilih kartu untuk mulai mengocok.</p>
 
+<!-- Kartu dadu diletakkan terlebih dahulu -->
 <div id="outcomeGrid" class="dice-card-grid"></div>
 
-<div id="answerArea" class="activity hidden">
-<h3>Temukan n(A) dan P(A)</h3>
-<p>Setelah semua kartu diamati, tentukan banyak hasil yang memenuhi kejadian dan peluangnya.</p>
-<label for="nA">Banyak anggota kejadian, n(A)</label><br>
-<input id="nA" type="number" min="0">
-<br>
-<label for="pA">Peluang kejadian, P(A)</label><br>
-<input id="pA" type="text" placeholder="Contoh: 1/6">
-<br>
-<button class="primary" id="checkButton">Periksa Jawaban</button>
-<p id="feedback" class="feedback"></p>
-</div>
-
+<!-- Tabel pengamatan diletakkan tepat di bawah kartu dadu -->
 <h3>Tabel Pengamatan</h3>
 <div class="table-wrap">
 <table>
-<thead><tr><th>No.</th><th>Hasil</th><th>Keterangan Kejadian</th><th>Status</th></tr></thead>
+<thead>
+<tr>
+<th>No.</th>
+<th>Hasil</th>
+<th>Keterangan Kejadian</th>
+<th>Status</th>
+</tr>
+</thead>
 <tbody id="observationBody"></tbody>
 </table>
+</div>
+
+<!-- Bagian jawaban berada setelah tabel pengamatan -->
+<div id="answerArea" class="activity hidden">
+<h3>Temukan n(A) dan P(A)</h3>
+<p>Setelah semua kartu diamati dan tabel pengamatan terisi, tentukan banyak anggota kejadian dan peluangnya.</p>
+
+<label for="nA">Banyak anggota kejadian, n(A)</label><br>
+<input id="nA" type="number" min="0">
+<br>
+
+<label for="pA">Peluang kejadian, P(A)</label><br>
+<input id="pA" type="text" placeholder="Contoh: 1/6">
+<br>
+
+<button class="primary" id="checkButton">Periksa Jawaban</button>
+<p id="feedback" class="feedback"></p>
 </div>
 </section>
 </main>
@@ -320,19 +341,27 @@ Frekuensi relatif kejadian A = frekuensi kejadian A / banyak percobaan
 /* UTILITAS DADU 3D */
 function createDieFaces(cube){
   cube.innerHTML='';
+
   const sides=[
-    ['front',1],['back',6],['right',3],
-    ['left',4],['top',2],['bottom',5]
+    ['front',1],
+    ['back',6],
+    ['right',3],
+    ['left',4],
+    ['top',2],
+    ['bottom',5]
   ];
+
   sides.forEach(([side,n])=>{
     const face=document.createElement('div');
     face.className='face '+side;
     face.dataset.n=n;
+
     for(let i=0;i<n;i++){
       const pip=document.createElement('span');
       pip.className='pip';
       face.appendChild(pip);
     }
+
     cube.appendChild(face);
   });
 }
@@ -346,7 +375,9 @@ function setDieFace(cube,n){
     5:[90,0],
     6:[0,180]
   };
+
   const [x,y]=rotations[n];
+
   cube.style.animation='none';
   cube.classList.remove('rolling');
   cube.style.transform=`scale(.76) rotateX(${x}deg) rotateY(${y}deg)`;
@@ -358,6 +389,7 @@ function rollDie(cube,n,duration=900){
     cube.classList.remove('unrolled');
     cube.classList.remove('rolling');
     cube.style.animation='none';
+
     void cube.offsetWidth;
 
     const spinX=(4+Math.floor(Math.random()*3))*360;
@@ -380,18 +412,22 @@ function rollDie(cube,n,duration=900){
     cube.style.setProperty('--spin-x',`${spinX}deg`);
     cube.style.setProperty('--spin-y',`${spinY}deg`);
     cube.style.setProperty('--spin-z',`${spinZ}deg`);
+
     cube.style.animation='';
     cube.classList.add('rolling');
 
     setTimeout(()=>{
       cube.classList.remove('rolling');
       cube.style.animation='none';
+
       setDieFace(cube,n);
+
       cube.style.removeProperty('--spin-x');
       cube.style.removeProperty('--spin-y');
       cube.style.removeProperty('--spin-z');
       cube.style.removeProperty('--end-x');
       cube.style.removeProperty('--end-y');
+
       resolve();
     },duration);
   });
@@ -402,12 +438,19 @@ function makeSampleTable(){
   const table=document.getElementById('sampleTable');
   let html='<tr><th>Dadu 1 \\ Dadu 2</th>';
 
-  for(let b=1;b<=6;b++)html+=`<th>${b}</th>`;
+  for(let b=1;b<=6;b++){
+    html+=`<th>${b}</th>`;
+  }
+
   html+='</tr>';
 
   for(let a=1;a<=6;a++){
     html+=`<tr><th>${a}</th>`;
-    for(let b=1;b<=6;b++)html+=`<td>(${a}, ${b})</td>`;
+
+    for(let b=1;b<=6;b++){
+      html+=`<td>(${a}, ${b})</td>`;
+    }
+
     html+='</tr>';
   }
 
@@ -449,6 +492,7 @@ function calcExpected(){
 /* PERCOBAAN KOIN FREKUENSI RELATIF */
 let coinFlips=[];
 let coinBusy=false;
+
 const coinVisual=document.getElementById('coinVisual');
 
 function updateCoinStats(){
@@ -479,7 +523,9 @@ function flipCoin(times){
   coinBusy=true;
 
   const buttons=['flipOnce','flipTen','resetCoin'];
-  buttons.forEach(id=>document.getElementById(id).disabled=true);
+  buttons.forEach(id=>{
+    document.getElementById(id).disabled=true;
+  });
 
   let count=0;
 
@@ -492,12 +538,14 @@ function flipCoin(times){
 
     setTimeout(()=>{
       coinVisual.classList.remove('flipping');
+
       coinVisual.style.transform=side==='A'
         ?'rotateY(0deg)'
         :'rotateY(180deg)';
 
       coinFlips.push(side);
       count++;
+
       updateCoinStats();
 
       document.getElementById('coinResult').textContent=
@@ -507,7 +555,11 @@ function flipCoin(times){
         setTimeout(one,80);
       }else{
         coinBusy=false;
-        buttons.forEach(id=>document.getElementById(id).disabled=false);
+
+        buttons.forEach(id=>{
+          document.getElementById(id).disabled=false;
+        });
+
         document.getElementById('coinResult').textContent=
           `Selesai ${times} percobaan.`;
       }
@@ -525,7 +577,10 @@ document.getElementById('resetCoin').onclick=()=>{
 
   coinFlips=[];
   coinVisual.style.transform='rotateY(0deg)';
-  document.getElementById('coinResult').textContent='Koin siap dilempar.';
+
+  document.getElementById('coinResult').textContent=
+    'Koin siap dilempar.';
+
   updateCoinStats();
 };
 
@@ -533,11 +588,16 @@ updateCoinStats();
 
 /* EKSPERIMEN KOIN DAN DADU SALING BEBAS */
 const indDie=document.getElementById('indDie');
+
 createDieFaces(indDie);
 setDieFace(indDie,1);
 indDie.classList.add('unrolled');
 
-let indTrials=0,indHeads=0,indSix=0,indBoth=0,indBusy=false;
+let indTrials=0;
+let indHeads=0;
+let indSix=0;
+let indBoth=0;
+let indBusy=false;
 let indHistory=[];
 
 function updateIndependent(){
@@ -550,18 +610,20 @@ function updateIndependent(){
     'Frekuensi relatif kejadian bersama: '+
     (indTrials?((indBoth/indTrials)*100).toFixed(1):'0')+'%';
 
-  document.getElementById('indHistory').innerHTML=indHistory.map((x,i)=>
-    `<span class="chip ${x.both?'head':''}">${i+1}. ${x.coin==='G'?'Gambar':'Angka'}, dadu ${x.die}${x.both?' ✓':''}</span>`
-  ).join('');
+  document.getElementById('indHistory').innerHTML=
+    indHistory.map((x,i)=>
+      `<span class="chip ${x.both?'head':''}">${i+1}. ${x.coin==='G'?'Gambar':'Angka'}, dadu ${x.die}${x.both?' ✓':''}</span>`
+    ).join('');
 }
 
 function independentTrial(times){
   if(indBusy)return;
 
   indBusy=true;
-  ['indOnce','indTen','indReset'].forEach(id=>
-    document.getElementById(id).disabled=true
-  );
+
+  ['indOnce','indTen','indReset'].forEach(id=>{
+    document.getElementById(id).disabled=true;
+  });
 
   let done=0;
 
@@ -577,11 +639,13 @@ function independentTrial(times){
 
     rollDie(indDie,die,times===1?750:250).then(()=>{
       indCoin.classList.remove('flipping');
+
       indCoin.style.transform=coin==='G'
         ?'rotateY(180deg)'
         :'rotateY(0deg)';
 
       indTrials++;
+
       if(coin==='G')indHeads++;
       if(die===6)indSix++;
       if(both)indBoth++;
@@ -599,9 +663,10 @@ function independentTrial(times){
         setTimeout(next,80);
       }else{
         indBusy=false;
-        ['indOnce','indTen','indReset'].forEach(id=>
-          document.getElementById(id).disabled=false
-        );
+
+        ['indOnce','indTen','indReset'].forEach(id=>{
+          document.getElementById(id).disabled=false;
+        });
       }
     });
   }
@@ -615,7 +680,10 @@ document.getElementById('indTen').onclick=()=>independentTrial(10);
 document.getElementById('indReset').onclick=()=>{
   if(indBusy)return;
 
-  indTrials=indHeads=indSix=indBoth=0;
+  indTrials=0;
+  indHeads=0;
+  indSix=0;
+  indBoth=0;
   indHistory=[];
 
   document.getElementById('indResult').textContent='';
@@ -693,6 +761,7 @@ function outcomeLabel(a){
 
 function generateOutcomes(){
   outcomes=[];
+
   const d=missions[mission].dice;
 
   for(let a=1;a<=6;a++){
@@ -709,7 +778,8 @@ function generateOutcomes(){
 function renderOutcomes(){
   document.getElementById('sampleCount').textContent=outcomes.length;
   document.getElementById('observedCount').textContent=observed.size;
-  document.getElementById('remainingCount').textContent=outcomes.length-observed.size;
+  document.getElementById('remainingCount').textContent=
+    outcomes.length-observed.size;
 
   const grid=document.getElementById('outcomeGrid');
   grid.innerHTML='';
@@ -719,6 +789,7 @@ function renderOutcomes(){
     const done=observed.has(key);
 
     const card=document.createElement('div');
+
     card.className='dice-card'+(done?' done':'');
 
     card.innerHTML=`
@@ -743,29 +814,33 @@ function renderOutcomes(){
 
       stage.appendChild(cube);
       row.appendChild(stage);
+
       createDieFaces(cube);
 
       if(done){
         setDieFace(cube,n);
       }else{
-        /* Sembunyikan dadu sampai kartu dikocok */
+        /* Dadu disembunyikan sebelum kartu dikocok */
         cube.classList.add('unrolled');
       }
     });
 
     card.querySelector('button').onclick=()=>observeOutcome(i);
+
     grid.appendChild(card);
   });
 
   document.getElementById('observationBody').innerHTML=
-    outcomes.filter(o=>observed.has(outcomeKey(o))).map((o,i)=>
-      `<tr>
-        <td>${i+1}</td>
-        <td>${outcomeLabel(o)}</td>
-        <td>${missions[mission].test(o)?'Termasuk kejadian':'Bukan kejadian'}</td>
-        <td>Sudah diamati</td>
-      </tr>`
-    ).join('');
+    outcomes
+      .filter(o=>observed.has(outcomeKey(o)))
+      .map((o,i)=>
+        `<tr>
+          <td>${i+1}</td>
+          <td>${outcomeLabel(o)}</td>
+          <td>${missions[mission].test(o)?'Termasuk kejadian':'Bukan kejadian'}</td>
+          <td>Sudah diamati</td>
+        </tr>`
+      ).join('');
 
   document.getElementById('answerArea').classList.toggle(
     'hidden',
@@ -777,6 +852,7 @@ function observeOutcome(i){
   if(mainRolling||observed.has(outcomeKey(outcomes[i])))return;
 
   mainRolling=true;
+
   const o=outcomes[i];
 
   document.getElementById('rollButton').disabled=true;
@@ -856,7 +932,12 @@ document.getElementById('checkButton').addEventListener('click',()=>{
 
   if(pRaw.includes('/')){
     const parts=pRaw.split('/');
-    p=Number(parts[0])/Number(parts[1]);
+
+    if(parts.length!==2||Number(parts[1])===0){
+      p=NaN;
+    }else{
+      p=Number(parts[0])/Number(parts[1]);
+    }
   }else{
     p=Number(pRaw);
   }
