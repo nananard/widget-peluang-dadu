@@ -1,29 +1,2014 @@
 <!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Media Pembelajaran Interaktif: Peluang</title>
-</head>
-<body>
-<p id="loading">Memuat media pembelajaran peluang...</p>
+<html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Media Interaktif Peluang</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f3f6fb;color:#243047;line-height:1.6}header{background:#244a87;color:#fff;padding:26px 16px;text-align:center}header h1{margin:0 0 6px}main{max-width:1050px;margin:auto;padding:18px}.panel{background:#fff;border-radius:14px;padding:20px;margin-bottom:18px;box-shadow:0 3px 12px #1c315018}h2,h3{color:#244a87;margin-top:0}h2{font-size:22px}h3{font-size:18px}button,select,input{font:inherit}button{border:0;border-radius:8px;padding:10px 14px;cursor:pointer;font-weight:bold;margin:4px 3px}.primary{background:#2458a6;color:white}.secondary{background:#e7eef9;color:#244a87}input,select{padding:10px;border:1px solid #cbd5e1;border-radius:8px;max-width:100%;margin:4px 0}label{display:block;font-weight:bold;margin-top:10px}.formula{background:#edf3fc;border-left:4px solid #2458a6;padding:12px;border-radius:8px;font-size:1.05rem;overflow-wrap:anywhere}.activity{background:#f7faff;border:1px solid #dbe6f5;border-radius:10px;padding:14px;margin-top:14px}.feedback{font-weight:bold;min-height:24px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}.stats{display:flex;flex-wrap:wrap;gap:10px}.stat{background:#edf3fc;padding:12px;border-radius:9px;flex:1;min-width:130px;text-align:center}.stat strong{display:block;font-size:23px;color:#244a87}.outcomes{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px;margin:14px 0}.outcome{border:2px solid #dce4f0;border-radius:10px;padding:10px;text-align:center}.outcome.done{border-color:#269568;background:#effaf4}.dice{font-size:25px;color:#244a87;font-weight:bold}.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;margin-top:10px}th,td{border:1px solid #d7dfeb;padding:8px;text-align:center}th{background:#edf3fc;color:#244a87}.muted{color:#5a667a;font-size:.94rem}.two-col{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}.tree{padding:12px;background:#f7faff;border-radius:8px;text-align:center}.hidden{display:none}
+/* Eksperimen koin */
+.coin-stage{display:flex;justify-content:center;align-items:center;min-height:190px;padding:20px}
+.coin{width:130px;height:130px;position:relative;transform-style:preserve-3d;transition:transform 1.1s cubic-bezier(.2,.75,.25,1)}
+.coin-face{position:absolute;inset:0;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;border:7px double #d9a52e;background:radial-gradient(circle at 30% 25%,#fff4a8,#f6c746 52%,#bd7c11);color:#70440b;font-weight:800;box-shadow:inset 0 0 0 3px #ffe99b,0 8px 15px #26364b30;backface-visibility:hidden}
+.coin-face.back{transform:rotateY(180deg)}
+.coin-face span{font-size:39px;line-height:1.1}.coin-face small{font-size:14px;letter-spacing:1px}
+.coin.flipping{animation:coinFlip 1s ease-in-out}
+@keyframes coinFlip{0%{transform:rotateY(0) rotateX(0)}25%{transform:rotateY(360deg) rotateX(180deg) translateY(-22px)}50%{transform:rotateY(720deg) rotateX(360deg) translateY(-35px)}75%{transform:rotateY(1080deg) rotateX(540deg) translateY(-16px)}100%{transform:rotateY(1440deg) rotateX(720deg)}}
+.coin-history{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}.coin-chip{padding:7px 10px;border-radius:20px;background:#edf3fc;font-weight:bold}.coin-chip.head{background:#fff0bd;color:#805700}.coin-chip.tail{background:#dceafe;color:#244a87}
+.coin-stat{background:#edf3fc;padding:12px;border-radius:9px;flex:1;min-width:125px;text-align:center}.coin-stat strong{display:block;font-size:22px;color:#244a87}
+
+/* Dadu 3D seperti eksperimen awal */
+.dice-stage-row{display:flex;justify-content:center;align-items:center;gap:35px;flex-wrap:wrap;min-height:175px;padding:14px}
+.die-unit{text-align:center;min-width:110px;font-weight:bold}
+.die-stage{width:100px;height:100px;margin:12px auto;perspective:600px;perspective-origin:50% 50%}
+.die-spinner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transform:rotateX(-18deg) rotateY(-25deg)}
+.die-cube{width:100%;height:100%;position:relative;transform-style:preserve-3d;transform:rotateX(0deg) rotateY(0deg)}
+.face{position:absolute;width:100px;height:100px;border-radius:14px;border:3px solid #d6deeb;background:#fff;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:13px;backface-visibility:hidden;box-shadow:inset 0 0 8px #aab8cc55}
+.face.front{transform:rotateY(0deg) translateZ(50px)}.face.back{transform:rotateY(180deg) translateZ(50px)}.face.right{transform:rotateY(90deg) translateZ(50px)}.face.left{transform:rotateY(-90deg) translateZ(50px)}.face.top{transform:rotateX(90deg) translateZ(50px)}.face.bottom{transform:rotateX(-90deg) translateZ(50px)}
+.pip{width:15px;height:15px;background:#244a87;border-radius:50%;align-self:center;justify-self:center}
+.face[data-number="1"] .pip:nth-child(1){grid-area:2/2}
+.face[data-number="2"] .pip:nth-child(1){grid-area:1/1}.face[data-number="2"] .pip:nth-child(2){grid-area:3/3}
+.face[data-number="3"] .pip:nth-child(1){grid-area:1/1}.face[data-number="3"] .pip:nth-child(2){grid-area:2/2}.face[data-number="3"] .pip:nth-child(3){grid-area:3/3}
+.face[data-number="4"] .pip:nth-child(1){grid-area:1/1}.face[data-number="4"] .pip:nth-child(2){grid-area:1/3}.face[data-number="4"] .pip:nth-child(3){grid-area:3/1}.face[data-number="4"] .pip:nth-child(4){grid-area:3/3}
+.face[data-number="5"] .pip:nth-child(1){grid-area:1/1}.face[data-number="5"] .pip:nth-child(2){grid-area:1/3}.face[data-number="5"] .pip:nth-child(3){grid-area:2/2}.face[data-number="5"] .pip:nth-child(4){grid-area:3/1}.face[data-number="5"] .pip:nth-child(5){grid-area:3/3}
+.face[data-number="6"] .pip:nth-child(1){grid-area:1/1}.face[data-number="6"] .pip:nth-child(2){grid-area:2/1}.face[data-number="6"] .pip:nth-child(3){grid-area:3/1}.face[data-number="6"] .pip:nth-child(4){grid-area:1/3}.face[data-number="6"] .pip:nth-child(5){grid-area:2/3}.face[data-number="6"] .pip:nth-child(6){grid-area:3/3}
+.die-cube.rolling{animation:rollDie .18s linear infinite}
+.card-die-cube.rolling{animation:rollCardDie .18s linear infinite}
+@keyframes rollCardDie{0%{transform:scale(.62) rotateX(0) rotateY(0) rotateZ(0)}25%{transform:scale(.62) rotateX(90deg) rotateY(180deg) rotateZ(90deg)}50%{transform:scale(.62) rotateX(180deg) rotateY(360deg) rotateZ(180deg)}75%{transform:scale(.62) rotateX(270deg) rotateY(540deg) rotateZ(270deg)}100%{transform:scale(.62) rotateX(360deg) rotateY(720deg) rotateZ(360deg)}}
+@keyframes rollDie{0%{transform:rotateX(0) rotateY(0) rotateZ(0)}25%{transform:rotateX(90deg) rotateY(180deg) rotateZ(90deg)}50%{transform:rotateX(180deg) rotateY(360deg) rotateZ(180deg)}75%{transform:rotateX(270deg) rotateY(540deg) rotateZ(270deg)}100%{transform:rotateX(360deg) rotateY(720deg) rotateZ(360deg)}}
+.mini-coin{width:86px;height:86px;margin:12px auto}
+.mini-coin .coin-face span{font-size:28px}.mini-coin .coin-face small{font-size:10px}
+.experiment-result{text-align:center;font-weight:bold;color:#244a87;min-height:28px}
+.dice-card-grid{grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:14px 0}.dice-card{border:2px solid #dce4f0;border-radius:12px;padding:10px 8px;text-align:center;background:#fff;min-width:0}.dice-card.done{border-color:#269568;background:#effaf4}.card-dice-row{display:flex;justify-content:center;align-items:center;gap:2px;min-height:96px;overflow:visible}.card-die-stage{width:82px;height:82px;perspective:700px;position:relative;overflow:visible;margin:4px auto}.card-die-cube{position:absolute;left:50%;top:50%;width:100px;height:100px;margin-left:-50px;margin-top:-50px;transform:scale(.62);transform-style:preserve-3d}.card-die-cube .face{width:100px;height:100px}.dice-card button{width:100%;margin:8px 0 0;padding:8px 4px;font-size:12px}.dice-card .status{font-size:12px;color:#53647c;min-height:36px}.dice-card .status.done-label{color:#26734d;font-weight:bold}@media(max-width:800px){.dice-card-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:420px){.dice-card-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+button:disabled{opacity:.55;cursor:not-allowed}@media(max-width:600px){main{padding:10px}.panel{padding:14px}}
+/* Perbaikan: tampilkan seluruh sisi dadu 3D pada kartu ruang sampel */
+.dice-card-grid { overflow: visible; }
+.dice-card { overflow: visible; }
+.dice-card .card-dice-row { overflow: visible; min-height: 96px; }
+.dice-card .card-die-stage { width: 82px; height: 82px; overflow: visible; }
+.dice-card .card-die-cube { transform: scale(.62); }
+</style>
+<style>
+
+:root{
+  --navy:#244a87;
+  --blue:#3976d3;
+  --light:#edf4ff;
+  --purple:#8061d9;
+  --green:#16865b;
+  --red:#d34e5c;
+  --text:#26344b;
+  --muted:#68768b;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  color:var(--text);
+  background:#f3f6fc;
+  line-height:1.6;
+}
+
+header{
+  padding:30px 18px;
+  text-align:center;
+  color:white;
+  background:linear-gradient(125deg,#244a87,#477dd0);
+}
+
+header h1{
+  margin:0 0 8px;
+  font-size:clamp(23px,4vw,34px);
+}
+
+header p{margin:0}
+
+main{
+  max-width:1100px;
+  margin:auto;
+  padding:20px;
+}
+
+.panel{
+  background:white;
+  border-radius:16px;
+  padding:22px;
+  margin-bottom:18px;
+  box-shadow:0 4px 18px #213c6310;
+}
+
+h2,h3{
+  color:var(--navy);
+  margin-top:0;
+}
+
+h2{font-size:22px}
+h3{font-size:17px}
+p{margin:9px 0}
+
+.note,.small{
+  color:var(--muted);
+  font-size:13px;
+}
+
+.tabs{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:9px;
+}
+
+.tab{
+  padding:12px 8px;
+  background:white;
+  color:var(--navy);
+  border:2px solid #d9e4f5;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.tab.active{
+  background:var(--navy);
+  color:white;
+  border-color:var(--navy);
+}
+
+.topic{display:none}
+.topic.active{
+  display:block;
+  animation:appear .35s ease;
+}
+
+@keyframes appear{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+button,input{font:inherit}
+
+button{
+  border:0;
+  border-radius:9px;
+  padding:10px 15px;
+  cursor:pointer;
+  font-weight:bold;
+  transition:transform .15s,filter .15s;
+}
+
+button:hover:not(:disabled){
+  filter:brightness(.96);
+  transform:translateY(-1px);
+}
+
+button:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+.primary{background:var(--blue);color:white}
+.secondary{background:#e8effb;color:var(--navy)}
+.green{background:var(--green);color:white}
+
+button:focus-visible,input:focus-visible{
+  outline:3px solid #f5c451;
+  outline-offset:2px;
+}
+
+label{
+  display:block;
+  margin:10px 0 5px;
+  font-weight:bold;
+}
+
+input{
+  width:100%;
+  min-width:0;
+  padding:10px 12px;
+  border:1px solid #c8d4e5;
+  border-radius:8px;
+  background:white;
+  color:var(--text);
+}
+
+.input-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+
+.input-grid.three{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+}
+
+.visual{
+  background:#f7faff;
+  border:1px solid #e1eafa;
+  border-radius:14px;
+  padding:15px;
+  margin:16px 0;
+}
+
+.button-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+  margin:12px 0;
+}
+
+.result{
+  display:none;
+  background:#eef8f2;
+  border-left:4px solid var(--green);
+  border-radius:8px;
+  padding:14px;
+  margin-top:15px;
+  overflow-wrap:anywhere;
+}
+
+.result.show{
+  display:block;
+  animation:appear .25s ease;
+}
+
+.result p{margin:7px 0}
+
+.math{
+  background:#edf3ff;
+  border-radius:8px;
+  padding:10px 12px;
+  margin:9px 0;
+  font-size:17px;
+  overflow-wrap:anywhere;
+}
+
+.badge{
+  display:inline-block;
+  border-radius:20px;
+  padding:4px 10px;
+  background:#e6eefc;
+  color:var(--navy);
+  font-size:13px;
+  font-weight:bold;
+}
+
+.venn-svg{
+  width:100%;
+  max-width:570px;
+  display:block;
+  margin:auto;
+}
+
+.venn-circle{
+  transition:
+    cx .8s cubic-bezier(.2,.75,.25,1),
+    fill .4s,
+    opacity .4s,
+    r .4s;
+}
+
+.venn-step{
+  min-height:45px;
+  background:#f7faff;
+  border-radius:8px;
+  padding:12px;
+  margin-top:10px;
+  border-left:4px solid var(--blue);
+}
+
+.gift-scene{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:28px;
+  flex-wrap:wrap;
+  padding:15px;
+}
+
+.gift{
+  width:112px;
+  text-align:center;
+  font-size:14px;
+  font-weight:bold;
+}
+
+.gift-icon{
+  font-size:52px;
+  display:block;
+  line-height:1.3;
+}
+
+/* KOIN 3D */
+.coin-stage{
+  height:160px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  perspective:700px;
+}
+
+.coin-3d{
+  width:110px;
+  height:110px;
+  position:relative;
+  transform-style:preserve-3d;
+  transition:transform .7s;
+}
+
+.coin-face{
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  border:7px double #d4a32b;
+  background:radial-gradient(circle at 30% 25%,#fff6b9,#f5c644 60%,#b87b14);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  color:#70440b;
+  font-weight:bold;
+  backface-visibility:hidden;
+  box-shadow:inset 0 0 0 3px #ffe99b;
+}
+
+.coin-face span{font-size:35px}
+.coin-face small{font-size:13px}
+.coin-back{transform:rotateY(180deg)}
+.coin-3d.flipping{animation:coinflip3d .8s ease-in-out}
+
+@keyframes coinflip3d{
+  0%{transform:rotateY(0)}
+  50%{transform:rotateY(900deg) translateY(-25px)}
+  100%{transform:rotateY(1800deg)}
+}
+
+/* DADU 3D */
+.dice-row{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:125px;
+}
+
+.die-stage{
+  width:110px;
+  height:110px;
+  position:relative;
+  perspective:600px;
+}
+
+.die-cube{
+  position:absolute;
+  width:100px;
+  height:100px;
+  left:5px;
+  top:5px;
+  transform-style:preserve-3d;
+  transform:scale(.76);
+}
+
+.face{
+  position:absolute;
+  width:100px;
+  height:100px;
+  border:3px solid #d5deeb;
+  border-radius:13px;
+  background:linear-gradient(145deg,#fff,#edf2fa);
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:repeat(3,1fr);
+  padding:12px;
+  backface-visibility:hidden;
+}
+
+.face.front{transform:rotateY(0deg) translateZ(50px)}
+.face.back{transform:rotateY(180deg) translateZ(50px)}
+.face.right{transform:rotateY(90deg) translateZ(50px)}
+.face.left{transform:rotateY(-90deg) translateZ(50px)}
+.face.top{transform:rotateX(90deg) translateZ(50px)}
+.face.bottom{transform:rotateX(-90deg) translateZ(50px)}
+
+.pip{
+  width:15px;
+  height:15px;
+  border-radius:50%;
+  background:#244a87;
+  align-self:center;
+  justify-self:center;
+}
+
+.face[data-n="1"] .pip:nth-child(1){grid-area:2/2}
+
+.face[data-n="2"] .pip:nth-child(1){grid-area:1/1}
+.face[data-n="2"] .pip:nth-child(2){grid-area:3/3}
+
+.face[data-n="3"] .pip:nth-child(1){grid-area:1/1}
+.face[data-n="3"] .pip:nth-child(2){grid-area:2/2}
+.face[data-n="3"] .pip:nth-child(3){grid-area:3/3}
+
+.face[data-n="4"] .pip:nth-child(1){grid-area:1/1}
+.face[data-n="4"] .pip:nth-child(2){grid-area:1/3}
+.face[data-n="4"] .pip:nth-child(3){grid-area:3/1}
+.face[data-n="4"] .pip:nth-child(4){grid-area:3/3}
+
+.face[data-n="5"] .pip:nth-child(1){grid-area:1/1}
+.face[data-n="5"] .pip:nth-child(2){grid-area:1/3}
+.face[data-n="5"] .pip:nth-child(3){grid-area:2/2}
+.face[data-n="5"] .pip:nth-child(4){grid-area:3/1}
+.face[data-n="5"] .pip:nth-child(5){grid-area:3/3}
+
+.face[data-n="6"] .pip:nth-child(1){grid-area:1/1}
+.face[data-n="6"] .pip:nth-child(2){grid-area:2/1}
+.face[data-n="6"] .pip:nth-child(3){grid-area:3/1}
+.face[data-n="6"] .pip:nth-child(4){grid-area:1/3}
+.face[data-n="6"] .pip:nth-child(5){grid-area:2/3}
+.face[data-n="6"] .pip:nth-child(6){grid-area:3/3}
+
+@keyframes roll{
+  0%{transform:scale(.76) rotateX(0) rotateY(0)}
+  50%{transform:scale(.85) rotateX(900deg) rotateY(1080deg) translateY(-20px)}
+  100%{transform:scale(.76) rotateX(var(--end-x)) rotateY(var(--end-y))}
+}
+
+.die-cube.rolling{animation:roll .8s ease-in-out}
+
+.independent-stats{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:15px;
+}
+
+.independent-stat{
+  flex:1;
+  min-width:120px;
+  background:#edf3fc;
+  padding:12px;
+  border-radius:9px;
+  text-align:center;
+}
+
+.independent-stat strong{
+  display:block;
+  font-size:25px;
+  color:#244a87;
+}
+
+.independent-history{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:10px;
+}
+
+.independent-chip{
+  border-radius:20px;
+  padding:6px 10px;
+  background:#edf3fc;
+  font-size:13px;
+}
+
+.independent-chip.both{
+  background:#e7f8ee;
+  color:#16865b;
+  font-weight:bold;
+}
+
+hr{
+  border:0;
+  border-top:1px solid #e2e9f4;
+  margin:18px 0;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  text-align:center;
+}
+
+th,td{
+  padding:12px;
+  border:1px solid #d9e5f5;
+}
+
+th{background:#edf4ff}
+
+footer{
+  text-align:center;
+  padding:20px;
+  background:var(--navy);
+  color:white;
+  margin-top:35px;
+}
+
+/* KESIMPULAN AKHIR */
+#finalConclusion[hidden]{
+  display:none !important;
+}
+
+#finalConclusion{
+  animation:appear .5s ease;
+  border:2px solid #b8d1f5;
+}
+
+@media(max-width:650px){
+  main{padding:12px}
+  .panel{padding:16px}
+  .tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .input-grid.three{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+@media(max-width:400px){
+  .input-grid,.input-grid.three{grid-template-columns:1fr}
+    .input-grid,.input-grid.three{grid-template-columns:1fr}
+}
+
+</style></head><body>
+<header><h1>Media Pembelajaran Interaktif: Peluang</h1><p>Pelajari konsep, coba aktivitas, lalu periksa jawabanmu.</p></header><main>
+<section class="panel"><h2>Petunjuk Penggunaan</h2><ol><li>Pelajari ringkasan materi pada setiap bagian.</li><li>Kerjakan aktivitas interaktif yang tersedia.</li><li>Gunakan percobaan koin untuk frekuensi relatif dan peluang kejadian saling bebas, serta dadu 3D untuk menjelajahi ruang sampel.</li></ol><p class="muted">Catatan: hasil pengocokan pada kartu ruang sampel digunakan untuk menjelajahi setiap kemungkinan hasil, bukan simulasi frekuensi acak jangka panjang.</p></section>
+<section class="panel"><h2>A. Peluang Kejadian (Konsep Dasar)</h2>
+<h3>1. Percobaan, Ruang Sampel S, dan Kejadian A</h3><p><b>Percobaan</b> adalah kegiatan yang hasilnya belum diketahui sebelum dilakukan. <b>Ruang sampel (S)</b> adalah himpunan semua hasil yang mungkin, sedangkan <b>kejadian (A)</b> adalah himpunan bagian dari ruang sampel. Setiap hasil tunggal disebut titik sampel.</p><div class="formula">Pelemparan satu dadu: S = {1, 2, 3, 4, 5, 6}.<br>Kejadian muncul angka genap: A = {2, 4, 6}.</div>
+<div class="activity"><b>Percobaan interaktif</b><p>Pilih angka yang termasuk kejadian muncul angka genap.</p><div id="evenChoices" class="grid"></div><p id="evenFeedback" class="feedback" aria-live="polite"></p><button class="secondary" onclick="resetEven()">Ulangi</button></div>
+<h3>2. Cara Menentukan Ruang Sampel</h3><p>Untuk dua objek, ruang sampel dapat ditentukan dengan <b>tabel</b> atau <b>diagram pohon</b>. Jika dua dadu dilempar bersama, hasil ditulis sebagai pasangan berurutan (dadu 1, dadu 2), sehingga banyak anggota ruang sampel adalah 6 × 6 = 36.</p><div class="two-col"><div><h4>Contoh tabel dua dadu</h4><div class="table-wrap"><table id="sampleTable"></table></div></div><div><h4>Contoh diagram pohon</h4><div class="tree"><label for="treeFirst">Hasil dadu pertama</label><select id="treeFirst" onchange="drawTree()"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select><p>↓ Kemungkinan hasil dadu kedua</p><div id="treeLeaves" class="grid"></div><p class="muted">Setiap cabang dadu kedua membentuk pasangan (dadu 1, dadu 2).</p></div></div></div>
+<div class="activity"><b>Percobaan interaktif</b><p>Dua koin memiliki sisi Angka (A) dan Gambar (G). Berapa banyak hasil berbeda yang mungkin?</p><button class="secondary" onclick="sampleQuiz(3)">2</button><button class="secondary" onclick="sampleQuiz(4)">4</button><button class="secondary" onclick="sampleQuiz(6)">6</button><p id="sampleFeedback" class="feedback"></p></div>
+<h3>3. Frekuensi Relatif Suatu Kejadian</h3><p>Frekuensi relatif membandingkan banyaknya suatu kejadian muncul dengan jumlah seluruh percobaan yang dilakukan.</p><div class="formula">Frekuensi relatif A = f(A) / n</div><p><i>f(A)</i> adalah banyak kemunculan kejadian A dan <i>n</i> adalah jumlah percobaan. Nilainya berada antara 0 dan 1.</p><div class="activity" id="relativeCoinActivity"><b>🪙 Percobaan koin: frekuensi relatif</b><p>Lempar koin berulang kali. Setiap hasil akan dicatat otomatis untuk menghitung frekuensi relatif sisi Angka.</p><div class="coin-stage"><div class="coin" id="freqCoinVisual"><div class="coin-face front"><span>A</span><small>ANGKA</small></div><div class="coin-face back"><span>G</span><small>GAMBAR</small></div></div></div><p id="freqCoinResult" class="experiment-result">Koin siap dilempar!</p><div style="text-align:center"><button class="primary" id="freqFlipOnce">🪙 Lempar 1 kali</button><button class="primary" id="freqFlipTen">⚡ Lempar 10 kali</button><button class="secondary" id="freqFlipReset">🔄 Reset</button></div><div class="stats" style="margin-top:12px"><div class="coin-stat">Jumlah percobaan<strong id="freqCoinN">0</strong></div><div class="coin-stat">Angka<strong id="freqCoinA">0</strong><span id="freqCoinARel">Frekuensi relatif: 0%</span></div><div class="coin-stat">Gambar<strong id="freqCoinG">0</strong><span id="freqCoinGRel">Frekuensi relatif: 0%</span></div></div><h4>Riwayat hasil</h4><div id="freqCoinHistory" class="coin-history"><span class="muted">Belum ada hasil.</span></div><p id="freqResult" class="feedback"></p></div>
+<h3>4. Peluang Suatu Kejadian</h3><p>Jika semua titik sampel memiliki kemungkinan yang sama, peluang kejadian A adalah perbandingan banyak anggota A dengan banyak anggota ruang sampel.</p><div class="formula">P(A) = n(A) / n(S), dengan 0 ≤ P(A) ≤ 1</div><p>Peluang 0 berarti kejadian mustahil, sedangkan peluang 1 berarti kejadian pasti.</p><div class="activity"><b>Latihan interaktif</b><p>Satu dadu dilempar. Peluang muncul angka lebih dari 4 adalah ...</p><button class="secondary" onclick="quiz('probQuiz',false,'1/6')">1/6</button><button class="secondary" onclick="quiz('probQuiz',true,'2/6 = 1/3')">2/6 = 1/3</button><button class="secondary" onclick="quiz('probQuiz',false,'1/2')">1/2</button><p id="probQuiz" class="feedback"></p></div>
+<h3>5. Peluang Komplemen Suatu Kejadian</h3><p>Komplemen A (ditulis A′ atau Aᶜ) adalah kejadian bahwa A tidak terjadi.</p><div class="formula">P(A′) = 1 − P(A)</div><div class="activity"><b>Latihan interaktif</b><p>Peluang turun hujan adalah 0,3. Dengan asumsi hanya ada dua kemungkinan, peluang tidak turun hujan adalah ...</p><button class="secondary" onclick="quiz('compQuiz',false,'0,3')">0,3</button><button class="secondary" onclick="quiz('compQuiz',true,'0,7')">0,7</button><button class="secondary" onclick="quiz('compQuiz',false,'1,3')">1,3</button><p id="compQuiz" class="feedback"></p></div>
+<h3>6. Frekuensi Harapan</h3><p>Frekuensi harapan memperkirakan banyak kemunculan kejadian dalam sejumlah percobaan.</p><div class="formula">Fₕ(A) = n × P(A)</div><div class="activity"><b>Simulasi interaktif</b><label for="fhN">Jumlah percobaan (n)</label><input id="fhN" type="number" min="0" value="60"><label for="fhP">Peluang kejadian (antara 0 dan 1)</label><input id="fhP" type="number" min="0" max="1" step="0.01" value="0.5"><button class="primary" onclick="calcExpected()">Hitung frekuensi harapan</button><p id="fhResult" class="feedback"></p></div>
+</section>
+
+
+
+<section class="panel">
+<h2>Pilih Materi</h2>
+<div class="tabs" role="tablist" aria-label="Materi peluang">
+<button class="tab active" data-topic="m1" role="tab" aria-selected="true">1. Saling Lepas</button>
+<button class="tab" data-topic="m2" role="tab" aria-selected="false">2. Tidak Saling Lepas</button>
+<button class="tab" data-topic="m3" role="tab" aria-selected="false">3. Saling Bebas</button>
+<button class="tab" data-topic="m4" role="tab" aria-selected="false">4. Peluang Bersyarat</button>
+</div>
+</section>
+
+<!-- MATERI 1 -->
+<section class="topic active" id="m1" role="tabpanel">
+
+<section class="panel">
+<span class="badge">Materi 1</span>
+<h2>Peluang Kejadian Saling Lepas</h2>
+
+<p>Dua kejadian disebut saling lepas apabila keduanya tidak mempunyai anggota yang sama. Dengan demikian, kedua kejadian tidak dapat terjadi secara bersamaan dalam satu percobaan.</p>
+
+<p>Contoh: pada sebuah undian, satu kupon hanya dapat memenangkan satu hadiah. Kejadian mendapat hadiah buku dan tumbler saling lepas jika satu kupon tidak mungkin memenangkan keduanya sekaligus.</p>
+
+<div class="visual">
+<h3>Amati diagram Venn</h3>
+
+<svg class="venn-svg" viewBox="0 0 500 245" role="img" aria-label="Dua lingkaran kejadian yang tidak beririsan">
+<rect x="12" y="10" width="476" height="220" rx="15" fill="#fff" stroke="#cdd9ec" stroke-width="2"/>
+<text x="28" y="34" fill="#68768b" font-size="12">Ruang sampel (S)</text>
+
+<circle id="m1CircleA" class="venn-circle" cx="145" cy="120" r="68" fill="#78aaf5" fill-opacity=".72" stroke="#3976d3" stroke-width="3"/>
+<circle id="m1CircleB" class="venn-circle" cx="355" cy="120" r="68" fill="#b4a1f3" fill-opacity=".72" stroke="#8061d9" stroke-width="3"/>
+
+<text x="145" y="124" text-anchor="middle" font-size="20" font-weight="bold" fill="#163e7b">A</text>
+<text x="355" y="124" text-anchor="middle" font-size="20" font-weight="bold" fill="#4c3197">B</text>
+
+<text id="m1EmptyIntersection" x="250" y="205" text-anchor="middle" font-size="16" font-weight="bold" fill="#d34e5c" opacity="0">A ∩ B = ∅</text>
+</svg>
+
+<div class="button-row" style="justify-content:center">
+<button class="primary" id="m1Animate">▶ Amati diagram</button>
+<button class="secondary" id="m1ResetDiagram">Ulangi dari awal</button>
+</div>
+
+<div class="venn-step" id="m1DiagramText" aria-live="polite">Tekan “Amati diagram” untuk memulai Pengamatan 1.</div>
+</div>
+</section>
+
+<section class="panel">
+<h2>Soal Kontekstual: Undian Hadiah Sekolah</h2>
+
+<div class="visual">
+<div class="gift-scene">
+<div class="gift"><span class="gift-icon">📚</span>Hadiah buku</div>
+<div class="gift"><span class="gift-icon">🎟️</span>Kupon undian</div>
+<div class="gift"><span class="gift-icon">🥤</span>Hadiah tumbler</div>
+</div>
+
+<p>Sebuah panitia memiliki sejumlah kupon undian. Setiap kupon hanya dapat memperoleh satu hadiah. Masukkan jumlah kupon seluruhnya dan jumlah kupon yang berpeluang mendapatkan masing-masing hadiah. Hitung peluang memperoleh buku atau tumbler!</p>
+</div>
+
+<div class="input-grid three">
+<div>
+<label for="m1Total">Jumlah seluruh kupon</label>
+<input id="m1Total" type="number" min="1" step="1" value="0">
+</div>
+
+<div>
+<label for="m1A">Kupon hadiah buku (A)</label>
+<input id="m1A" type="number" min="0" step="1" value="0">
+</div>
+
+<div>
+<label for="m1B">Kupon hadiah tumbler (B)</label>
+<input id="m1B" type="number" min="0" step="1" value="0">
+</div>
+</div>
+
+<p class="note">Pastikan jumlah kupon buku dan tumbler tidak melebihi jumlah seluruh kupon.</p>
+
+<button class="primary" id="m1Calculate">Hitung Peluang</button>
+<div class="result" id="m1Result" aria-live="polite"></div>
+</section>
+</section>
+
+<!-- MATERI 2 -->
+<section class="topic" id="m2" role="tabpanel">
+
+<section class="panel">
+<span class="badge">Materi 2</span>
+<h2>Peluang Kejadian Tidak Saling Lepas</h2>
+
+<p>Dua kejadian tidak saling lepas apabila keduanya memiliki anggota yang sama. Artinya, kedua kejadian dapat terjadi secara bersamaan.</p>
+
+<div class="visual">
+<h3>Amati perubahan diagram Venn</h3>
+
+<svg class="venn-svg" viewBox="0 0 500 245" role="img" aria-label="Diagram Venn dua kejadian yang beririsan">
+<defs>
+<clipPath id="m2ClipA">
+<circle id="m2ClipCircle" cx="190" cy="120" r="72"/>
+</clipPath>
+</defs>
+
+<rect x="12" y="10" width="476" height="220" rx="15" fill="#fff" stroke="#cdd9ec" stroke-width="2"/>
+<text x="28" y="34" fill="#68768b" font-size="12">Ruang sampel (S)</text>
+
+<circle id="m2CircleA" class="venn-circle" cx="145" cy="120" r="72" fill="#78aaf5" fill-opacity=".72" stroke="#3976d3" stroke-width="3"/>
+<circle id="m2CircleB" class="venn-circle" cx="355" cy="120" r="72" fill="#b4a1f3" fill-opacity=".72" stroke="#8061d9" stroke-width="3"/>
+
+<circle id="m2Intersection" cx="310" cy="120" r="72" fill="#3976d3" fill-opacity="1" clip-path="url(#m2ClipA)" opacity="0"/>
+
+<text id="m2LabelA" x="145" y="124" text-anchor="middle" font-size="20" font-weight="bold" fill="#163e7b">A</text>
+<text id="m2LabelB" x="355" y="124" text-anchor="middle" font-size="20" font-weight="bold" fill="#4c3197">B</text>
+</svg>
+
+<div class="button-row">
+<button class="primary" id="m2Start">▶ Mulai animasi</button>
+<button class="secondary" id="m2ObserveA" disabled>Amati A</button>
+<button class="secondary" id="m2ObserveB" disabled>Amati B</button>
+<button class="secondary" id="m2ObserveI" disabled>Amati irisan</button>
+<button class="secondary" id="m2Reset">Ulangi</button>
+</div>
+
+<div class="venn-step" id="m2DiagramText" aria-live="polite">Tekan “Mulai animasi” untuk melihat kedua kejadian bergerak hingga beririsan.</div>
+</div>
+</section>
+
+<section class="panel">
+<h2>Soal Kontekstual: Ekstrakurikuler Siswa</h2>
+
+<div class="visual">
+<p>Di sebuah sekolah, siswa boleh mengikuti klub sains, klub bahasa, atau keduanya. Misalnya, dari 100 siswa, sebanyak 58 mengikuti klub sains, 45 mengikuti klub bahasa, dan 20 mengikuti kedua klub.</p>
+
+<p>Masukkan data sesuai soal atau ubah angkanya. Hitung peluang seorang siswa yang dipilih secara acak mengikuti klub sains atau klub bahasa.</p>
+</div>
+
+<div class="input-grid">
+<div>
+<label for="m2Total">Jumlah seluruh siswa, n(S)</label>
+<input id="m2Total" type="number" min="1" step="1" value="0">
+</div>
+
+<div>
+<label for="m2A">Mengikuti klub sains, n(A)</label>
+<input id="m2A" type="number" min="0" step="1" value="0">
+</div>
+
+<div>
+<label for="m2B">Mengikuti klub bahasa, n(B)</label>
+<input id="m2B" type="number" min="0" step="1" value="0">
+</div>
+
+<div>
+<label for="m2I">Mengikuti keduanya, n(A ∩ B)</label>
+<input id="m2I" type="number" min="0" step="1" value="0">
+</div>
+</div>
+
+<button class="primary" id="m2Calculate">Hitung Peluang Gabungan</button>
+<div class="result" id="m2Result" aria-live="polite"></div>
+</section>
+</section>
+
+<!-- MATERI 3 -->
+<section class="topic" id="m3" role="tabpanel">
+
+<section class="panel">
+<span class="badge">Materi 3</span>
+<h2>Peluang Kejadian Saling Bebas</h2>
+
+<p>Dua kejadian saling bebas apabila terjadinya kejadian pertama tidak mengubah peluang terjadinya kejadian kedua.</p>
+
+<div class="math">P(A ∩ B) = P(A) × P(B)</div>
+
+<div class="visual">
+<h3>Eksperimen Interaktif: Melempar Koin dan Dadu</h3>
+
+<p>Sebuah koin dan sebuah dadu dilempar secara bersamaan. Amati hasil yang muncul dari kedua benda tersebut.</p>
+
+<p><strong>Kejadian A:</strong> koin menunjukkan sisi Gambar.</p>
+<p><strong>Kejadian B:</strong> dadu menunjukkan angka 6.</p>
+
+<div class="coin-stage">
+<div class="coin-3d" id="indCoin">
+<div class="coin-face"><span>A</span><small>ANGKA</small></div>
+<div class="coin-face coin-back"><span>G</span><small>GAMBAR</small></div>
+</div>
+</div>
+
+<h3 style="text-align:center">Simulasi Dadu 3D</h3>
+
+<div class="dice-row">
+<div class="die-stage">
+<div class="die-cube" id="indDie"></div>
+</div>
+</div>
+
+<div class="button-row" style="justify-content:center">
+<button class="primary" id="indOnce">Lakukan 1 Percobaan</button>
+<button class="green" id="indTen">Lakukan 10 Percobaan</button>
+<button class="secondary" id="indReset">Ulangi</button>
+</div>
+
+<p id="indResult" class="venn-step" aria-live="polite">Koin dan dadu siap dilempar.</p>
+
+<h3>Hasil Pengamatan</h3>
+
+<div class="independent-stats">
+<div class="independent-stat">Jumlah percobaan<strong id="indTotal">0</strong></div>
+<div class="independent-stat">Koin Gambar<strong id="indCoinCount">0</strong></div>
+<div class="independent-stat">Dadu angka 6<strong id="indDieCount">0</strong></div>
+<div class="independent-stat">Keduanya terjadi<strong id="indBothCount">0</strong></div>
+</div>
+
+<h3>Frekuensi Relatif</h3>
+<div class="math" id="indFrequency">Frekuensi relatif kejadian bersama: 0%</div>
+
+<h3>Riwayat Percobaan</h3>
+<div id="indHistory" class="independent-history">Belum ada percobaan.</div>
+
+<p class="note">Tanda ✓ menunjukkan percobaan ketika koin menunjukkan Gambar dan dadu menunjukkan angka 6 secara bersamaan.</p>
+</div>
+</div>
+</section>
+
+<section class="panel">
+<h2>Analisis Hasil Percobaan</h2>
+
+<p>Perhatikan hasil percobaan yang telah dilakukan. Apakah kejadian muncul Gambar pada koin dan muncul angka 6 pada dadu saling memengaruhi?</p>
+
+<div class="math">P(A) = 1/2</div>
+<div class="math">P(B) = 1/6</div>
+<div class="math">P(A ∩ B) = P(A) × P(B)</div>
+<div class="math">P(A ∩ B) = 1/2 × 1/6 = 1/12</div>
+
+<p>Artinya, peluang koin menunjukkan Gambar dan dadu menunjukkan angka 6 secara bersamaan adalah 1/12 atau sekitar 8,33%.</p>
+
+<p class="note">Hasil percobaan dapat berbeda-beda karena setiap lemparan bersifat acak. Semakin banyak percobaan, frekuensi relatif dapat memberikan gambaran yang lebih baik mengenai peluang teoretis.</p>
+</section>
+
+<section class="panel">
+<h2>Soal Kontekstual: Koin dan Dadu</h2>
+
+<div class="visual">
+<p>Sebuah koin dan sebuah dadu dilempar secara bersamaan.</p>
+<p><strong>Kejadian A:</strong> koin menunjukkan Gambar.</p>
+<p><strong>Kejadian B:</strong> dadu menunjukkan angka 6.</p>
+
+<p>Masukkan peluang masing-masing kejadian untuk menghitung peluang keduanya terjadi secara bersamaan. Kamu dapat mengubah nilai peluang untuk mencoba situasi lain, selama kedua kejadian tetap saling bebas.</p>
+</div>
+
+<div class="input-grid">
+<div>
+<label for="m3A">Peluang kejadian A (dalam persen)</label>
+<input id="m3A" type="number" min="0" max="100" step="any" value="0">
+</div>
+
+<div>
+<label for="m3B">Peluang kejadian B (dalam persen)</label>
+<input id="m3B" type="number" min="0" max="100" step="any" value="0">
+</div>
+</div>
+
+<button class="primary" id="m3Calculate">Hitung Peluang Bersamaan</button>
+<div class="result" id="m3Result" aria-live="polite"></div>
+</section>
+</section>
+
+<!-- MATERI 4 -->
+<section class="topic" id="m4" role="tabpanel">
+
+<section class="panel">
+<span class="badge">Materi 4</span>
+<h2>Peluang Kejadian Bersyarat</h2>
+
+<p>Peluang kejadian bersyarat adalah peluang terjadinya suatu kejadian dengan memperhatikan bahwa kejadian lain telah terjadi terlebih dahulu. Dalam peluang bersyarat, ruang sampel menyesuaikan informasi yang diketahui.</p>
+
+<div class="visual">
+<strong>Perhatikan!</strong>
+<p>Jika diketahui kejadian B sudah terjadi, maka kita menghitung peluang A berdasarkan kondisi B. Sebaliknya, jika diketahui kejadian A sudah terjadi, maka kita menghitung peluang B berdasarkan kondisi A.</p>
+</div>
+</section>
+
+<section class="panel">
+<h2>1. Peluang Kejadian A dengan Syarat B Terjadi</h2>
+
+<p>Peluang kejadian A dengan syarat B telah terjadi adalah peluang terjadinya A setelah diketahui bahwa B sudah terjadi.</p>
+
+<div class="math">P(A|B) = P(A ∩ B) / P(B)</div>
+
+<p><strong>Keterangan:</strong></p>
+<ul>
+<li>P(A|B) = peluang A jika B telah terjadi.</li>
+<li>P(A ∩ B) = peluang A dan B terjadi bersamaan.</li>
+<li>P(B) = peluang kejadian B.</li>
+</ul>
+
+<p class="note">Syarat penggunaan rumus adalah P(B) &gt; 0.</p>
+
+<div class="visual">
+<h3>Contoh Soal 1</h3>
+
+<p>Dalam sebuah kelas terdapat 40 siswa. Sebanyak 20 siswa menyukai Matematika (A), 15 siswa menyukai Fisika (B), dan 10 siswa menyukai keduanya.</p>
+
+<p>Jika diketahui seorang siswa menyukai Fisika, berapakah peluang siswa tersebut juga menyukai Matematika?</p>
+
+<p><strong>Diketahui:</strong></p>
+<div class="math">n(S) = 40</div>
+<div class="math">n(A ∩ B) = 10</div>
+<div class="math">n(B) = 15</div>
+
+<p><strong>Ditanyakan:</strong> P(A|B).</p>
+
+<p><strong>Penyelesaian:</strong></p>
+<div class="math">P(A|B) = P(A ∩ B) / P(B)</div>
+<div class="math">P(A|B) = (10/40) / (15/40)</div>
+<div class="math">P(A|B) = 10/15 = 2/3</div>
+
+<p>Jadi, peluang siswa menyukai Matematika jika diketahui menyukai Fisika adalah 2/3 atau sekitar 66,67%.</p>
+</div>
+</section>
+
+<section class="panel">
+<h2>2. Peluang Kejadian B dengan Syarat A Terjadi</h2>
+
+<p>Peluang kejadian B dengan syarat A telah terjadi adalah peluang terjadinya B setelah diketahui bahwa A sudah terjadi.</p>
+
+<div class="math">P(B|A) = P(A ∩ B) / P(A)</div>
+
+<p><strong>Keterangan:</strong></p>
+<ul>
+<li>P(B|A) = peluang B jika A telah terjadi.</li>
+<li>P(A ∩ B) = peluang A dan B terjadi bersamaan.</li>
+<li>P(A) = peluang kejadian A.</li>
+</ul>
+
+<p class="note">Syarat penggunaan rumus adalah P(A) &gt; 0.</p>
+
+<div class="visual">
+<h3>Contoh Soal 2</h3>
+
+<p>Menggunakan data sebelumnya, terdapat 40 siswa. Sebanyak 20 siswa menyukai Matematika (A), 15 siswa menyukai Fisika (B), dan 10 siswa menyukai keduanya.</p>
+
+<p>Jika diketahui seorang siswa menyukai Matematika, berapakah peluang siswa tersebut juga menyukai Fisika?</p>
+
+<p><strong>Diketahui:</strong></p>
+<div class="math">n(S) = 40</div>
+<div class="math">n(A ∩ B) = 10</div>
+<div class="math">n(A) = 20</div>
+
+<p><strong>Ditanyakan:</strong> P(B|A).</p>
+
+<p><strong>Penyelesaian:</strong></p>
+<div class="math">P(B|A) = P(A ∩ B) / P(A)</div>
+<div class="math">P(B|A) = (10/40) / (20/40)</div>
+<div class="math">P(B|A) = 10/20 = 1/2</div>
+
+<p>Jadi, peluang siswa menyukai Fisika jika diketahui menyukai Matematika adalah 1/2 atau 50%.</p>
+</div>
+</section>
+
+<section class="panel">
+<h2>3. Perbandingan Kedua Rumus</h2>
+
+<p>Kedua rumus memiliki pembilang yang sama, yaitu peluang kejadian A dan B terjadi bersamaan. Perbedaannya terletak pada penyebutnya.</p>
+
+<table>
+<tr>
+<th>Jenis</th>
+<th>Rumus</th>
+<th>Penyebut</th>
+</tr>
+<tr>
+<td>A dengan syarat B</td>
+<td>P(A|B)</td>
+<td>P(B)</td>
+</tr>
+<tr>
+<td>B dengan syarat A</td>
+<td>P(B|A)</td>
+<td>P(A)</td>
+</tr>
+</table>
+
+<div class="visual">
+<strong>Hal penting:</strong>
+<p>P(A|B) tidak selalu sama dengan P(B|A). Perhatikan kejadian yang menjadi syarat karena itulah yang menentukan penyebut dalam rumus.</p>
+</div>
+</section>
+
+<section class="panel">
+<h2>4. Kalkulator Peluang Kejadian Bersyarat</h2>
+
+<p>Masukkan nilai peluang A, peluang B, dan peluang irisan A dan B. Gunakan bilangan desimal antara 0 dan 1.</p>
+
+<div class="input-grid three">
+<div>
+<label for="m4PA">P(A)</label>
+<input id="m4PA" type="number" min="0" max="1" step="any" placeholder="Contoh: 0.5">
+</div>
+
+<div>
+<label for="m4PB">P(B)</label>
+<input id="m4PB" type="number" min="0" max="1" step="any" placeholder="Contoh: 0.375">
+</div>
+
+<div>
+<label for="m4PAB">P(A ∩ B)</label>
+<input id="m4PAB" type="number" min="0" max="1" step="any" placeholder="Contoh: 0.25">
+</div>
+</div>
+
+<div class="button-row">
+<button class="primary" id="m4ProbabilityCalculate">Hitung Kedua Peluang</button>
+<button class="secondary" id="m4ProbabilityReset">Reset</button>
+</div>
+
+<div class="result" id="m4ProbabilityResult" aria-live="polite"></div>
+</section>
+
+<section class="panel">
+<h2>5. Soal Penerapan: Ekstrakurikuler Siswa</h2>
+
+<div class="visual">
+<p>Dalam sebuah sekolah, terdapat sejumlah siswa yang mengikuti kegiatan ekstrakurikuler sains dan matematika.</p>
+
+<p><strong>Kejadian A:</strong> siswa mengikuti ekstrakurikuler sains.</p>
+<p><strong>Kejadian B:</strong> siswa mengikuti ekstrakurikuler matematika.</p>
+
+<p>Jika seorang siswa diketahui mengikuti ekstrakurikuler matematika, tentukan peluang siswa tersebut juga mengikuti ekstrakurikuler sains.</p>
+
+<p><strong>Ditanyakan:</strong> P(A|B).</p>
+</div>
+
+<div class="input-grid">
+<div>
+<label for="m4Total">Jumlah seluruh siswa</label>
+<input id="m4Total" type="number" min="1" step="1" value="0">
+</div>
+
+<div>
+<label for="m4A">Siswa mengikuti sains, n(A)</label>
+<input id="m4A" type="number" min="0" step="1" value="0">
+</div>
+
+<div>
+<label for="m4B">Siswa mengikuti matematika, n(B)</label>
+<input id="m4B" type="number" min="0" step="1" value="0">
+</div>
+
+<div>
+<label for="m4Intersection">Siswa mengikuti keduanya, n(A ∩ B)</label>
+<input id="m4Intersection" type="number" min="0" step="1" value="0">
+</div>
+</div>
+
+<p class="note">Jumlah siswa yang mengikuti masing-masing ekstrakurikuler tidak boleh melebihi jumlah seluruh siswa. Jumlah siswa yang mengikuti keduanya tidak boleh melebihi jumlah siswa yang mengikuti sains maupun matematika.</p>
+
+<div class="button-row">
+<button class="primary" id="m4Calculate">Hitung Kedua Peluang Bersyarat</button>
+</div>
+
+<div class="result" id="m4Result" aria-live="polite"></div>
+</section>
+
+</section>
+
+<!-- KESIMPULAN AKHIR: AWALNYA TERSEMBUNYI -->
+<section class="panel" id="finalConclusion" hidden>
+
+<span class="badge">Kesimpulan Akhir</span>
+<h2>Kesimpulan Pembelajaran</h2>
+
+<p>
+Selamat! Kamu telah mencoba seluruh materi peluang kejadian majemuk.
+Berdasarkan kegiatan dan perhitungan yang telah dilakukan, berikut
+kesimpulan dari keempat materi.
+</p>
+
+<div class="visual">
+<h3>1. Peluang Kejadian Saling Lepas</h3>
+<p>
+Dua kejadian disebut saling lepas apabila tidak memiliki anggota
+yang sama sehingga tidak dapat terjadi secara bersamaan.
+</p>
+<div class="math">P(A ∪ B) = P(A) + P(B)</div>
+</div>
+
+<div class="visual">
+<h3>2. Peluang Kejadian Tidak Saling Lepas</h3>
+<p>
+Dua kejadian disebut tidak saling lepas apabila memiliki anggota
+yang sama atau dapat terjadi secara bersamaan.
+</p>
+<div class="math">
+P(A ∪ B) = P(A) + P(B) − P(A ∩ B)
+</div>
+</div>
+
+<div class="visual">
+<h3>3. Peluang Kejadian Saling Bebas</h3>
+<p>
+Dua kejadian disebut saling bebas apabila terjadinya kejadian
+pertama tidak memengaruhi peluang terjadinya kejadian kedua.
+</p>
+<div class="math">P(A ∩ B) = P(A) × P(B)</div>
+</div>
+
+<div class="visual">
+<h3>4. Peluang Kejadian Bersyarat</h3>
+<p>
+Peluang kejadian bersyarat digunakan untuk menentukan peluang
+suatu kejadian berdasarkan informasi bahwa kejadian lainnya
+telah terjadi.
+</p>
+
+<div class="math">
+P(A|B) = P(A ∩ B) / P(B)
+</div>
+
+<div class="math">
+P(B|A) = P(A ∩ B) / P(A)
+</div>
+
+<p>
+Kedua rumus memiliki penyebut yang berbeda karena kejadian
+yang menjadi syarat juga berbeda.
+</p>
+</div>
+
+<div class="result show">
+<h3>Kesimpulan Umum</h3>
+<p>
+Setiap jenis peluang kejadian majemuk memiliki karakteristik
+dan rumus yang berbeda. Oleh karena itu, sebelum menentukan
+rumus yang digunakan, kita perlu memahami hubungan antara
+kejadian A dan B serta informasi yang diketahui dalam soal.
+</p>
+</div>
+
+</section>
+
+
+<section class="panel" id="coinExperiment">
+<h2>C. Eksperimen Interaktif: Melempar Koin</h2>
+<p>Lempar koin virtual dan amati dua hasil yang mungkin: <b>Angka (A)</b> atau <b>Gambar (G)</b>. Untuk koin seimbang, peluang teoretis masing-masing sisi adalah 1/2 atau 50%.</p>
+<div class="formula">S = {A, G}; P(A) = 1/2; P(G) = 1/2</div>
+
+<div class="activity">
+<h3>🪙 Arena Lempar Koin</h3>
+<p class="muted">Pilih lemparan satu kali untuk mengamati satu hasil, atau lempar 20 kali untuk membandingkan frekuensi relatif dengan peluang teoretis.</p>
+
+<div class="coin-stage">
+<div id="coinVisual" class="coin" aria-label="Koin belum dilempar">
+<div class="coin-face front"><span>A</span><small>ANGKA</small></div>
+<div class="coin-face back"><span>G</span><small>GAMBAR</small></div>
+</div>
+</div>
+
+<p id="coinResult" class="result-text" aria-live="polite">Koin siap dilempar!</p>
+
+<div style="text-align:center">
+<button class="primary" id="flipOnce">🪙 Lempar 1 kali</button>
+<button class="primary" id="flipTwenty">⚡ Lempar 20 kali</button>
+<button class="secondary" id="resetCoin">🔄 Ulangi percobaan</button>
+</div>
+
+<div class="stats" style="margin-top:14px">
+<div class="coin-stat">Jumlah lemparan<strong id="coinTotal">0</strong></div>
+<div class="coin-stat">Angka<strong id="headsTotal">0</strong><span id="headsPercent">0%</span></div>
+<div class="coin-stat">Gambar<strong id="tailsTotal">0</strong><span id="tailsPercent">0%</span></div>
+</div>
+
+<h3 style="margin-top:18px">Riwayat hasil lemparan</h3>
+<div id="coinHistory" class="coin-history">
+<span class="muted">Belum ada hasil. Tekan tombol lempar koin.</span>
+</div>
+
+<div class="activity">
+<h3>Yuk, simpulkan!</h3>
+<p>Setelah melakukan percobaan, frekuensi relatif sisi Angka dapat dihitung dengan:</p>
+<div class="formula">Frekuensi relatif Angka = banyak Angka / jumlah lemparan</div>
+
+<label for="coinReflection">Apa yang kamu amati dari hasil percobaan?</label>
+<select id="coinReflection">
+<option value="">Pilih kesimpulan</option>
+<option value="close">Persentase Angka dan Gambar cenderung mendekati 50% jika percobaan dilakukan berulang kali.</option>
+<option value="always">Setiap 2 kali lemparan pasti muncul satu Angka dan satu Gambar.</option>
+<option value="certain">Sisi Angka pasti selalu muncul lebih banyak.</option>
+</select>
+
+<button class="secondary" onclick="checkCoinReflection()">Periksa kesimpulan</button>
+<p id="coinReflectionFeedback" class="feedback" aria-live="polite"></p>
+</div>
+</div>
+</section>
+
+<section class="panel">
+<h2>C. Eksperimen Peluang dengan Dadu</h2>
+<p>Pilih misi, lalu amati ruang sampel. Satu dadu memiliki 6 kemungkinan hasil dan dua dadu memiliki 36 pasangan hasil. Kartu hijau menunjukkan hasil yang sudah dijelajahi.</p>
+
+<label for="mission">Pilih misi pengamatan</label>
+<select id="mission">
+<option value="1">Misi 1 — Dadu menunjukkan angka 3</option>
+<option value="2">Misi 2 — Dadu menunjukkan angka genap</option>
+<option value="3">Misi 3 — Dadu menunjukkan angka lebih dari 4</option>
+<option value="4">Misi 4 — Jumlah dua dadu sama dengan 5</option>
+<option value="5">Misi 5 — Jumlah dua dadu lebih dari 7</option>
+<option value="6">Misi 6 — Jumlah dua dadu kurang dari 8</option>
+<option value="7">Misi 7 — Kedua dadu menunjukkan angka sama</option>
+<option value="8">Misi 8 — Jumlah dua dadu genap</option>
+<option value="9">Misi 9 — Dadu pertama lebih besar dari dadu kedua</option>
+</select>
+
+<p id="missionDescription" class="muted"></p>
+
+<div class="stats">
+<div class="stat">Anggota ruang sampel<strong id="sampleCount">6</strong></div>
+<div class="stat">Hasil diamati<strong id="observedCount">0</strong></div>
+<div class="stat">Belum diamati<strong id="remainingCount">6</strong></div>
+</div>
+
+<div class="activity">
+<h3>2. Kocok Dadu pada Setiap Kartu</h3>
+<p>Sebelum dikocok, semua dadu menampilkan angka 1. Tekan tombol <b>Kocok</b> pada setiap kartu untuk mengamati hasil yang berbeda. Hasil yang sudah diamati akan tetap ditampilkan.</p>
+<p id="resultText" class="experiment-result">Tekan tombol kocok pada kartu untuk memulai.</p>
+<button class="primary" id="rollButton">🎲 Kocok Hasil Berikutnya</button>
+<button class="secondary" id="resetButton">Ulangi Misi</button>
+</div>
+
+<h3>Kartu ruang sampel</h3>
+<div id="outcomeGrid" class="outcomes dice-card-grid"></div>
+
+<h3>Tabel pengamatan</h3>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>No.</th>
+<th>Hasil</th>
+<th>Keterangan kejadian</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody id="observationBody"></tbody>
+</table>
+</div>
+
+<div id="answerArea" class="activity hidden">
+<h3>Temukan peluang teoretis</h3>
+<p>Gunakan ruang sampel untuk menentukan banyak anggota kejadian n(A) dan peluang P(A).</p>
+
+<label for="nA">Banyak anggota kejadian, n(A)</label>
+<input id="nA" type="number" min="0" placeholder="Masukkan jawaban">
+
+<label for="pA">Peluang P(A), misalnya 1/6</label>
+<input id="pA" placeholder="Masukkan jawaban">
+
+<button class="primary" id="checkButton">Periksa jawaban</button>
+<p id="feedback" class="feedback"></p>
+</div>
+</section>
+
+<footer class="panel">
+<p><b>Refleksi:</b> Apa perbedaan frekuensi relatif dan peluang teoretis? Kapan tabel atau diagram pohon membantu menentukan ruang sampel?</p>
+</footer>
+</main>
+
 <script>
-(async function () {
-  const compressed =
-"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 dlsPy d534qscGxwGH PnCtv u e4WggUwrVnBFh8wSWcX7xBfhwV6t2Xd24rpevr y1ds3NB uSc/1xA6M5p8Roy/VgPi8VaYv6TtuOvi+Wq8CnHzrjWYk+9/o0RPqN3OnhFcBCfoNWL RgL3r1UsEtlLIcdAQ Sxs oRUxhxqwB20l8SHZKfTYI9gsxEDzcevAOP8iHMh4BlakZkTDEIoAdIcOCMwlUI5XgQ5De8lvS/fJBu xeoIlIIp3dpzea z2ngoEb3t8E4XLxOxBQEy+8LhUYn yZw9A9O3cvB754+Hp w/3TF7BUwdWYhmC57 4XNE1cIlO0VWqolPUqz1gi4EA cIPE4TnwyqeyDAxVwbuWkq9g85x8vDjH5Y7ukKPgLTskW0DExEStXhILZHeds i2W5VrGCni8DZVYH8vpDSQmWmYXxIkGdgLM8Tx0V0Bslfq pYKOL+sPPK9ALKUspctF3Bwc/f1DOY2XWJevXP/9r6wVzs557icPAq nac9VxmjRuQVYb5bWunVkr iHSU/TdWKqg7zV+V5XUTMHN7JEIgYOZnBjqw/P3+ wU0bYoBE+0+vE89ylD1Meia6g3ExktMSDTy2JycQTurTuyRxL+Jfc c8SyibFt2grjzkbLO b6T19XPUNf3yUxWV4+Syd7w0k1";
+// Simulasi koin dengan animasi dan statistik langsung
+// Helper dadu 3D: keenam sisi dan orientasi akhir
 
-  const bytes = Uint8Array.from(atob(compressed), c => c.charCodeAt(0));
-  const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"));
-  const html = await new Response(stream).text();
+function createDieFaces(cube){
+ cube.innerHTML='';
+ const faces=[['front',1],['back',6],['right',3],['left',4],['top',5],['bottom',2]];
+ faces.forEach(([name,n])=>{
+  const face=document.createElement('div');
+  face.className='face '+name;
+  face.dataset.number=n;
+  for(let i=0;i<n;i++){
+   const pip=document.createElement('span');
+   pip.className='pip';
+   face.appendChild(pip);
+  }
+  cube.appendChild(face);
+ });
+}
 
-  document.open();
-  document.write(html);
-  document.close();
-})().catch(error => {
-  document.body.innerHTML =
-    "<h2>Media gagal dimuat</h2><p>Silakan buka menggunakan browser Chrome atau Edge versi terbaru.</p><pre>" +
-    error.message + "</pre>";
+function dieTransform(n){
+ return ({
+  1:'rotateX(0deg) rotateY(0deg)',
+  2:'rotateX(-90deg) rotateY(0deg)',
+  3:'rotateX(0deg) rotateY(-90deg)',
+  4:'rotateX(0deg) rotateY(90deg)',
+  5:'rotateX(90deg) rotateY(0deg)',
+  6:'rotateX(0deg) rotateY(180deg)'
+ })[n];
+}
+
+function setDieFace(cube,n){
+ cube.classList.remove('rolling');
+ const scale=cube.classList.contains('card-die-cube')?'scale(.62) ':'';
+ cube.style.transform=scale+dieTransform(n);
+}
+
+function animateDie(cube,n,delay=700){
+ return new Promise(resolve=>{
+  cube.classList.add('rolling');
+  let timer=setInterval(()=>{
+   cube.style.transform=`${cube.classList.contains('card-die-cube')?'scale(.62) ':''}rotateX(${Math.random()*720}deg) rotateY(${Math.random()*720}deg) rotateZ(${Math.random()*720}deg)`;
+  },90);
+
+  setTimeout(()=>{
+   clearInterval(timer);
+   setDieFace(cube,n);
+   resolve();
+  },delay);
+ });
+}
+
+// Koin khusus materi frekuensi relatif
+let freqCoinFlips=[],freqCoinBusy=false;
+const freqCoinEl=document.getElementById('freqCoinVisual');
+
+function updateFreqCoin(){
+ const n=freqCoinFlips.length;
+ const a=freqCoinFlips.filter(x=>x==='A').length;
+ const g=n-a;
+
+ document.getElementById('freqCoinN').textContent=n;
+ document.getElementById('freqCoinA').textContent=a;
+ document.getElementById('freqCoinG').textContent=g;
+ document.getElementById('freqCoinARel').textContent='Frekuensi relatif: '+(n?(a/n*100):0).toFixed(1)+'%';
+ document.getElementById('freqCoinGRel').textContent='Frekuensi relatif: '+(n?(g/n*100):0).toFixed(1)+'%';
+
+ document.getElementById('freqCoinHistory').innerHTML=n
+  ?freqCoinFlips.map((x,i)=>`<span class="coin-chip ${x==='A'?'head':'tail'}">${i+1}. ${x==='A'?'Angka':'Gambar'}</span>`).join('')
+  :'<span class="muted">Belum ada hasil.</span>';
+
+ document.getElementById('freqResult').textContent=n
+  ?`Frekuensi relatif Angka = ${a}/${n} = ${(a/n).toFixed(3)}; Gambar = ${g}/${n} = ${(g/n).toFixed(3)}.`
+  :'';
+}
+
+function runFreqFlips(times){
+ if(freqCoinBusy)return;
+
+ freqCoinBusy=true;
+ ['freqFlipOnce','freqFlipTen','freqFlipReset'].forEach(id=>document.getElementById(id).disabled=true);
+
+ let done=0;
+
+ function one(){
+  const side=Math.random()<.5?'A':'G';
+  freqCoinEl.classList.remove('flipping');
+  void freqCoinEl.offsetWidth;
+  freqCoinEl.classList.add('flipping');
+
+  setTimeout(()=>{
+   freqCoinEl.style.transform=side==='A'?'rotateY(0deg)':'rotateY(180deg)';
+   freqCoinEl.classList.remove('flipping');
+   freqCoinFlips.push(side);
+   done++;
+
+   document.getElementById('freqCoinResult').textContent=`Hasil ${freqCoinFlips.length}: ${side==='A'?'Angka':'Gambar'}`;
+   updateFreqCoin();
+
+   if(done<times){
+    setTimeout(one,times===1?0:90);
+   }else{
+    freqCoinBusy=false;
+    ['freqFlipOnce','freqFlipTen','freqFlipReset'].forEach(id=>document.getElementById(id).disabled=false);
+    document.getElementById('freqCoinResult').textContent=`Selesai ${times} lemparan. Amati perubahan frekuensi relatif!`;
+   }
+  },times===1?800:170);
+ }
+
+ one();
+}
+
+document.getElementById('freqFlipOnce').onclick=()=>runFreqFlips(1);
+document.getElementById('freqFlipTen').onclick=()=>runFreqFlips(10);
+
+document.getElementById('freqFlipReset').onclick=()=>{
+ if(freqCoinBusy)return;
+ freqCoinFlips=[];
+ freqCoinEl.style.transform='rotateY(0deg)';
+ document.getElementById('freqCoinResult').textContent='Koin siap dilempar!';
+ updateFreqCoin();
+};
+
+// Koin dan dadu 3D untuk mengamati dua kejadian saling bebas
+let independentResults=[],indBusy=false;
+const indCoin=document.getElementById('indCoinVisual');
+const indDie=document.getElementById('indDieCube');
+
+createDieFaces(indDie);
+setDieFace(indDie,1);
+
+function updateIndependent(){
+ const n=independentResults.length;
+ const a=independentResults.filter(x=>x.coin==='G').length;
+ const b=independentResults.filter(x=>x.die===6).length;
+ const both=independentResults.filter(x=>x.coin==='G'&&x.die===6).length;
+
+ document.getElementById('indTotal').textContent=n;
+ document.getElementById('indCoinCount').textContent=a;
+ document.getElementById('indDieCount').textContent=b;
+ document.getElementById('indBothCount').textContent=both;
+}
+// ==================================================
+// EKSPERIMEN KOIN DAN DADU: KEJADIAN SALING BEBAS
+// ==================================================
+
+function runIndependent(times){
+ if(indBusy) return;
+
+ indBusy=true;
+
+ ['indRollOnce','indRollTen','indReset'].forEach(id=>{
+  const button=document.getElementById(id);
+  if(button) button.disabled=true;
+ });
+
+ let done=0;
+
+ function nextTrial(){
+  const coin=Math.random()<0.5?'A':'G';
+  const die=1+Math.floor(Math.random()*6);
+  const delay=times===1?800:200;
+
+  indCoin.classList.remove('flipping');
+  void indCoin.offsetWidth;
+  indCoin.classList.add('flipping');
+
+  Promise.all([
+   new Promise(resolve=>{
+    setTimeout(()=>{
+     indCoin.style.transform=
+      coin==='A'?'rotateY(0deg)':'rotateY(180deg)';
+     indCoin.classList.remove('flipping');
+     resolve();
+    },delay);
+   }),
+   animateDie(indDie,die,delay)
+  ]).then(()=>{
+   independentResults.push({coin,die});
+   done++;
+
+   document.getElementById('indCoinLabel').textContent=
+    coin==='A'?'Angka':'Gambar';
+
+   document.getElementById('indDieLabel').textContent=
+    'Hasil dadu: '+die;
+
+   document.getElementById('indResult').textContent=
+    `Hasil percobaan: koin ${coin==='A'?'Angka':'Gambar'}, dadu ${die}.`+
+    (coin==='G'&&die===6?' Kedua kejadian terjadi bersama!':'');
+
+   updateIndependent();
+
+   if(done<times){
+    setTimeout(nextTrial,80);
+   }else{
+    indBusy=false;
+
+    ['indRollOnce','indRollTen','indReset'].forEach(id=>{
+     const button=document.getElementById(id);
+     if(button) button.disabled=false;
+    });
+
+    document.getElementById('indResult').textContent=
+     `Selesai ${times} percobaan.`;
+   }
+  });
+ }
+
+ nextTrial();
+}
+
+document.getElementById('indRollOnce').onclick=
+ ()=>runIndependent(1);
+
+document.getElementById('indRollTen').onclick=
+ ()=>runIndependent(10);
+
+document.getElementById('indReset').onclick=()=>{
+ if(indBusy) return;
+
+ independentResults=[];
+
+ indCoin.style.transform='rotateY(0deg)';
+ setDieFace(indDie,1);
+
+ document.getElementById('indCoinLabel').textContent=
+  'Belum dilempar';
+
+ document.getElementById('indDieLabel').textContent=
+  'Belum dilempar';
+
+ document.getElementById('indResult').textContent=
+  'Tekan tombol untuk melempar koin dan dadu.';
+
+ updateIndependent();
+};
+
+
+// ==================================================
+// EKSPERIMEN KOIN
+// ==================================================
+
+let coinFlips=[];
+let coinBusy=false;
+
+const coinEl=document.getElementById('coinVisual');
+
+function updateCoinStats(){
+ const total=coinFlips.length;
+ const heads=coinFlips.filter(x=>x==='A').length;
+ const tails=total-heads;
+
+ document.getElementById('coinTotal').textContent=total;
+ document.getElementById('headsTotal').textContent=heads;
+ document.getElementById('tailsTotal').textContent=tails;
+
+ document.getElementById('headsPercent').textContent=
+  (total?heads/total*100:0).toFixed(1)+'%';
+
+ document.getElementById('tailsPercent').textContent=
+  (total?tails/total*100:0).toFixed(1)+'%';
+
+ document.getElementById('coinHistory').innerHTML=
+  coinFlips.length
+   ?coinFlips.map((x,i)=>
+     `<span class="coin-chip ${x==='A'?'head':'tail'}">
+      ${i+1}. ${x==='A'?'Angka':'Gambar'}
+     </span>`
+    ).join('')
+   :'<span class="muted">Belum ada hasil.</span>';
+}
+
+function showCoinSide(side){
+ coinEl.style.transform=
+  side==='A'?'rotateY(0deg)':'rotateY(180deg)';
+}
+
+function flipCoin(times){
+ if(coinBusy) return;
+
+ coinBusy=true;
+
+ ['flipOnce','flipTwenty','resetCoin'].forEach(id=>{
+  document.getElementById(id).disabled=true;
+ });
+
+ let done=0;
+
+ document.getElementById('coinResult').textContent=
+  'Koin sedang dilempar...';
+
+ function oneFlip(){
+  const side=Math.random()<0.5?'A':'G';
+
+  coinEl.classList.remove('flipping');
+  void coinEl.offsetWidth;
+  coinEl.classList.add('flipping');
+
+  setTimeout(()=>{
+   showCoinSide(side);
+   coinEl.classList.remove('flipping');
+
+   coinFlips.push(side);
+   done++;
+
+   updateCoinStats();
+
+   document.getElementById('coinResult').textContent=
+    `Hasil lemparan ${coinFlips.length}: ${
+     side==='A'?'Angka':'Gambar'
+    }!`;
+
+   if(done<times){
+    setTimeout(oneFlip,times===1?0:120);
+   }else{
+    coinBusy=false;
+
+    ['flipOnce','flipTwenty','resetCoin'].forEach(id=>{
+     document.getElementById(id).disabled=false;
+    });
+
+    if(times>1){
+     const recent=coinFlips.slice(-times);
+     const a=recent.filter(x=>x==='A').length;
+     const g=recent.filter(x=>x==='G').length;
+
+     document.getElementById('coinResult').textContent=
+      `Selesai ${times} lemparan! Angka: ${a}, Gambar: ${g}.`;
+    }
+   }
+  },times===1?700:180);
+ }
+
+ oneFlip();
+}
+
+document.getElementById('flipOnce').onclick=
+ ()=>flipCoin(1);
+
+document.getElementById('flipTwenty').onclick=
+ ()=>flipCoin(20);
+
+document.getElementById('resetCoin').onclick=()=>{
+ if(coinBusy) return;
+
+ coinFlips=[];
+
+ showCoinSide('A');
+
+ document.getElementById('coinResult').textContent=
+  'Koin siap dilempar!';
+
+ document.getElementById('coinReflection').value='';
+ document.getElementById('coinReflectionFeedback').textContent='';
+
+ updateCoinStats();
+};
+
+function checkCoinReflection(){
+ const value=document.getElementById('coinReflection').value;
+ const feedback=document.getElementById('coinReflectionFeedback');
+
+ if(!value){
+  feedback.textContent='Pilih kesimpulan terlebih dahulu.';
+  feedback.style.color='#b45309';
+ }else if(value==='close'){
+  feedback.textContent=
+   'Tepat! Peluang teoretis setiap sisi adalah 50%. '+
+   'Hasil percobaan terbatas dapat berbeda, tetapi semakin banyak '+
+   'percobaan, frekuensi relatif biasanya cenderung mendekati 50%.';
+
+  feedback.style.color='#26734d';
+ }else{
+  feedback.textContent=
+   'Belum tepat. Setiap lemparan bersifat acak. '+
+   'Tidak ada jaminan Angka dan Gambar bergantian atau salah satunya selalu lebih banyak.';
+
+  feedback.style.color='#b91c1c';
+ }
+}
+
+updateCoinStats();
+
+
+// ==================================================
+// FUNGSI LATIHAN DAN KUIS
+// ==================================================
+
+function quiz(id,correct,answer){
+ const element=document.getElementById(id);
+
+ element.textContent=correct
+  ?'Benar! Jawaban yang tepat: '+answer+'.'
+  :'Belum tepat. Coba periksa kembali konsep atau rumus yang digunakan.';
+
+ element.style.color=correct?'#26734d':'#b91c1c';
+}
+
+function resetEven(){
+ document.querySelectorAll('#evenChoices button').forEach(button=>{
+  button.className='secondary';
+  button.disabled=false;
+ });
+
+ document.getElementById('evenFeedback').textContent='';
+}
+
+[1,2,3,4,5,6].forEach(n=>{
+ const button=document.createElement('button');
+
+ button.className='secondary';
+ button.textContent=n;
+
+ button.onclick=()=>{
+  button.className=n%2===0?'primary':'secondary';
+
+  document.getElementById('evenFeedback').textContent=
+   n%2===0
+    ?'Benar, angka ini termasuk bilangan genap.'
+    :'Angka ini ganjil, bukan anggota kejadian.';
+
+  document.getElementById('evenFeedback').style.color=
+   n%2===0?'#26734d':'#b91c1c';
+ };
+
+ document.getElementById('evenChoices').appendChild(button);
 });
+
+
+// ==================================================
+// TABEL RUANG SAMPEL DAN DIAGRAM POHON
+// ==================================================
+
+function makeSampleTable(){
+ let table=
+  '<tr><th>Dadu 1 \\\\ Dadu 2</th>'+
+  [1,2,3,4,5,6].map(n=>`<th>${n}</th>`).join('')+
+  '</tr>';
+
+ for(let a=1;a<=6;a++){
+  table+=`<tr><th>${a}</th>`;
+
+  for(let b=1;b<=6;b++){
+   table+=`<td>(${a}, ${b})</td>`;
+  }
+
+  table+='</tr>';
+ }
+
+ document.getElementById('sampleTable').innerHTML=table;
+}
+
+function drawTree(){
+ const a=Number(document.getElementById('treeFirst').value);
+
+ document.getElementById('treeLeaves').innerHTML=
+  [1,2,3,4,5,6].map(b=>
+   `<div class="outcome">(${a}, ${b})</div>`
+  ).join('');
+}
+
+makeSampleTable();
+drawTree();
+
+function sampleQuiz(n){
+ const correct=n===4;
+
+ document.getElementById('sampleFeedback').textContent=
+  correct
+   ?'Benar! Hasilnya AA, AG, GA, dan GG.'
+   :'Belum tepat. Setiap koin memiliki 2 kemungkinan, sehingga 2 × 2 = 4 hasil.';
+
+ document.getElementById('sampleFeedback').style.color=
+  correct?'#26734d':'#b91c1c';
+}
+
+
+// ==================================================
+// FREKUENSI HARAPAN
+// ==================================================
+
+function calcExpected(){
+ const n=Number(document.getElementById('fhN').value);
+ const p=Number(document.getElementById('fhP').value);
+
+ const result=document.getElementById('fhResult');
+
+ if(
+  n<0||
+  p<0||
+  p>1||
+  document.getElementById('fhN').value===''||
+  document.getElementById('fhP').value===''
+ ){
+  result.textContent=
+   'Masukkan n ≥ 0 dan peluang antara 0 sampai 1.';
+  return;
+ }
+
+ result.textContent=`Fₕ(A) = ${n} × ${p} = ${n*p}.`;
+}
+
+
+// ==================================================
+// MISI RUANG SAMPEL DADU
+// ==================================================
+
+const missions={
+ 1:{
+  dice:1,
+  desc:'Kejadian: dadu menunjukkan angka 3.',
+  test:([a])=>a===3
+ },
+ 2:{
+  dice:1,
+  desc:'Kejadian: dadu menunjukkan angka genap.',
+  test:([a])=>a%2===0
+ },
+ 3:{
+  dice:1,
+  desc:'Kejadian: dadu menunjukkan angka lebih dari 4.',
+  test:([a])=>a>4
+ },
+ 4:{
+  dice:2,
+  desc:'Kejadian: jumlah dua dadu sama dengan 5.',
+  test:([a,b])=>a+b===5
+ },
+ 5:{
+  dice:2,
+  desc:'Kejadian: jumlah dua dadu lebih dari 7.',
+  test:([a,b])=>a+b>7
+ },
+ 6:{
+  dice:2,
+  desc:'Kejadian: jumlah dua dadu kurang dari 8.',
+  test:([a,b])=>a+b<8
+ },
+ 7:{
+  dice:2,
+  desc:'Kejadian: kedua dadu menunjukkan angka sama.',
+  test:([a,b])=>a===b
+ },
+ 8:{
+  dice:2,
+  desc:'Kejadian: jumlah dua dadu genap.',
+  test:([a,b])=>(a+b)%2===0
+ },
+ 9:{
+  dice:2,
+  desc:'Kejadian: angka dadu pertama lebih besar daripada dadu kedua.',
+  test:([a,b])=>a>b
+ }
+};
+
+let mission=1;
+let outcomes=[];
+let observed=new Set();
+let mainRolling=false;
+
+const key=o=>o.join('-');
+
+const label=o=>
+ o.length===1?String(o[0]):`(${o[0]}, ${o[1]})`;
+
+function gen(){
+ outcomes=[];
+
+ const dice=missions[mission].dice;
+
+ for(let a=1;a<=6;a++){
+  if(dice===1){
+   outcomes.push([a]);
+  }else{
+   for(let b=1;b<=6;b++){
+    outcomes.push([a,b]);
+   }
+  }
+ }
+}
+
+
+// ==================================================
+// MENAMPILKAN KARTU RUANG SAMPEL
+// ==================================================
+
+function render(){
+ document.getElementById('sampleCount').textContent=
+  outcomes.length;
+
+ document.getElementById('observedCount').textContent=
+  observed.size;
+
+ document.getElementById('remainingCount').textContent=
+  outcomes.length-observed.size;
+
+ const grid=document.getElementById('outcomeGrid');
+
+ grid.innerHTML=outcomes.map((o,i)=>{
+  const done=observed.has(key(o));
+
+  return `
+   <div class="dice-card ${done?'done':''}">
+    <b>Hasil ${label(o)}</b>
+
+    <div class="card-dice-row">
+     ${o.map((n,j)=>`
+      <div class="card-die-stage">
+       <div class="card-die-cube" id="cardCube-${i}-${j}"></div>
+      </div>
+     `).join('')}
+    </div>
+
+    <div class="status ${done?'done-label':''}">
+     ${done?'✓ Sudah diamati':'Belum dikocok'}
+    </div>
+
+    <button
+     class="${done?'secondary':'primary'}"
+     ${done?'disabled':''}
+     onclick="observe(${i})">
+     ${done?'Sudah diamati':'🎲 Kocok'}
+    </button>
+   </div>
+  `;
+ }).join('');
+
+ outcomes.forEach((o,i)=>{
+  o.forEach((n,j)=>{
+   const cube=document.getElementById(`cardCube-${i}-${j}`);
+
+   createDieFaces(cube);
+   setDieFace(cube,observed.has(key(o))?n:1);
+  });
+ });
+
+ document.getElementById('observationBody').innerHTML=
+  outcomes
+   .filter(o=>observed.has(key(o)))
+   .map((o,i)=>`
+    <tr>
+     <td>${i+1}</td>
+     <td>${label(o)}</td>
+     <td>
+      ${missions[mission].test(o)
+       ?'Termasuk kejadian'
+       :'Bukan kejadian'}
+     </td>
+     <td>Sudah diamati</td>
+    </tr>
+   `).join('');
+
+ document.getElementById('answerArea').classList.toggle(
+  'hidden',
+  observed.size!==outcomes.length
+ );
+}
+
+
+// ==================================================
+// ANIMASI DAN PENGAMATAN DADU
+// ==================================================
+
+function observe(i){
+ if(mainRolling||observed.has(key(outcomes[i]))) return;
+
+ const outcome=outcomes[i];
+
+ mainRolling=true;
+
+ document.getElementById('rollButton').disabled=true;
+ document.getElementById('resetButton').disabled=true;
+ document.getElementById('mission').disabled=true;
+
+ const tasks=outcome.map((n,j)=>
+  animateDie(
+   document.getElementById(`cardCube-${i}-${j}`),
+   n,
+   750
+  )
+ );
+
+ Promise.all(tasks).then(()=>{
+  observed.add(key(outcome));
+
+  document.getElementById('resultText').textContent=
+   'Hasil pengamatan: '+label(outcome)+
+   (missions[mission].test(outcome)
+    ?' — termasuk kejadian yang diteliti.'
+    :' — bukan kejadian yang diteliti.');
+
+  mainRolling=false;
+
+  document.getElementById('rollButton').disabled=false;
+  document.getElementById('resetButton').disabled=false;
+  document.getElementById('mission').disabled=false;
+
+  render();
+ });
+}
+
+
+// ==================================================
+// PENGATURAN MISI DAN TOMBOL DADU
+// ==================================================
+
+function setup(){
+ mission=Number(document.getElementById('mission').value);
+
+ observed.clear();
+
+ gen();
+
+ document.getElementById('missionDescription').textContent=
+  missions[mission].desc;
+
+ document.getElementById('resultText').textContent=
+  'Tekan tombol kocok pada kartu untuk memulai.';
+
+ document.getElementById('nA').value='';
+ document.getElementById('pA').value='';
+
+ document.getElementById('feedback').textContent='';
+
+ render();
+}
+
+document.getElementById('mission').addEventListener(
+ 'change',
+ setup
+);
+
+document.getElementById('resetButton').onclick=setup;
+
+document.getElementById('rollButton').onclick=()=>{
+ if(mainRolling) return;
+
+ const remaining=outcomes
+  .map((o,i)=>({o,i}))
+  .filter(x=>!observed.has(key(x.o)));
+
+ if(remaining.length){
+  const selected=
+   remaining[Math.floor(Math.random()*remaining.length)];
+
+  observe(selected.i);
+ }else{
+  document.getElementById('resultText').textContent=
+   'Semua hasil ruang sampel sudah diamati. Tekan Ulangi Misi untuk memulai kembali.';
+ }
+};
+
+
+// ==================================================
+// MEMERIKSA JAWABAN n(A) DAN P(A)
+// ==================================================
+
+document.getElementById('checkButton').onclick=()=>{
+ const nRaw=document.getElementById('nA').value.trim();
+
+ const pRaw=document.getElementById('pA').value
+  .trim()
+  .replace(',','.');
+
+ const nA=Number(nRaw);
+
+ let p;
+
+ if(pRaw.includes('/')){
+  const parts=pRaw.split('/');
+
+  p=Number(parts[0])/Number(parts[1]);
+ }else{
+  p=Number(pRaw);
+ }
+
+ const count=outcomes.filter(
+  missions[mission].test
+ ).length;
+
+ const expected=count/outcomes.length;
+
+ const feedback=document.getElementById('feedback');
+
+ const correct=
+  nRaw!==''&&
+  pRaw!==''&&
+  nA===count&&
+  Number.isFinite(p)&&
+  Math.abs(p-expected)<0.0001;
+
+ feedback.textContent=correct
+  ?'Benar! Banyak anggota kejadian dan peluang teoretis sudah tepat.'
+  :`Belum tepat. Periksa kembali n(A) dan P(A). Petunjuk: terdapat ${count} hasil yang memenuhi kejadian dari ${outcomes.length} titik sampel.`;
+
+ feedback.style.color=correct?'#26734d':'#b91c1c';
+};
+
+
+// Menampilkan misi pertama saat halaman dibuka
+setup();
+
 </script>
+
 </body>
 </html>
